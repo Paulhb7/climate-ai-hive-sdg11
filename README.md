@@ -2,7 +2,7 @@
 IBM Hackathon
 
 ## CONCEPT DU PROJET 
-**Nom du projet : UrbanGuard.AI : IA agentique pour des villes plus intelligentes et plus sûres**
+**Nom du projet : SentinelT : IA agentique pour des villes plus intelligentes et plus sûres**
 
 ### Ce que cela fait :
 Un réseau d'agents alimentés par watsonx évalue en continu les risques urbains liés au climat. Lorsque des menaces comme des inondations ou des vagues de chaleur sont prévues, il :
