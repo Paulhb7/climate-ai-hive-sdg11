@@ -5,7 +5,7 @@ from beeai_framework.tools.search.wikipedia import WikipediaTool
 from beeai_framework.tools.weather.openmeteo import OpenMeteoTool
 from beeai_framework.workflows.agent import AgentWorkflow, AgentWorkflowInput
 import os
-from onu_tool import UNSDGTool, UNSDGToolInput
+from onu_tools import UNSDGTool, UNSDGToolInput
 
 GROQ_API_KEY = "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"
 

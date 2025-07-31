@@ -1,0 +1,4 @@
+beeai-framework
+beeai-framework[wikipedia]
+fastapi
+uvicorn

@@ -1,7 +1,10 @@
 "use client";
 import { useState } from "react";
 import Mapbox3DMap from "./Mapbox3DMap";
+import SimpleClimateMap from "./SimpleClimateMap";
+import SimpleCompareMap from "./SimpleCompareMap";
 import { useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 
 export default function Home() {
   const [city, setCity] = useState("");
@@ -20,6 +23,9 @@ export default function Home() {
   const [questionResponse, setQuestionResponse] = useState<string | null>(null);
   const [loadingClimateAnalysis, setLoadingClimateAnalysis] = useState(false);
   const [climateAnalysisResult, setClimateAnalysisResult] = useState<string | null>(null);
+  const [showClimateMap, setShowClimateMap] = useState(false);
+  const [showCompareMap, setShowCompareMap] = useState(false);
+
 
   const handleShowOnMap = (e: React.FormEvent) => {
     e.preventDefault();
@@ -159,7 +165,7 @@ export default function Home() {
       {/* Box d'intro description agent */}
       {showIntro && (
         <>
-          <div style={{
+          <div className="custom-scrollbar" style={{
           position: "absolute",
           top: "50%",
           left: "50%",
@@ -415,7 +421,7 @@ export default function Home() {
       
       {/* Popup de résultat - positionnée en dehors de la structure pour un centrage parfait */}
       {agentResult && (
-        <div className="glassmorphism" style={{ 
+        <div className="glassmorphism custom-scrollbar" style={{ 
           position: 'fixed',
           top: '50%',
           left: '50%',
@@ -445,7 +451,7 @@ export default function Home() {
             borderBottom: '1px solid #e0e0e0',
             paddingBottom: '1rem'
           }}>
-            <strong style={{ fontSize: '1.2rem', fontWeight: 600 }}>Climate Hive Analysis for {selectedCity} - SDG 11 Recommendations:</strong>
+            <strong style={{ fontSize: '1.2rem', fontWeight: 600 }}>🌍🐝 Climate Hive for sustainable cities</strong>
             <button
               onClick={() => setAgentResult(null)}
               style={{
@@ -461,21 +467,14 @@ export default function Home() {
               Close
             </button>
           </div>
-          <div style={{ 
-            whiteSpace: 'pre-wrap',
-            fontFamily: "'IBM Plex Sans', 'Inter', Arial, sans-serif",
-            marginBottom: '2rem'
-          }}>
-            {agentResult}
-          </div>
           
-          {/* Encart de questions supplémentaires */}
+          {/* Box principale pour l'analyse Climate Hive */}
           <div style={{
             border: '1px solid #e0e0e0',
             borderRadius: '12px',
             padding: '1.5rem',
             background: 'rgba(248,251,255,0.8)',
-            marginTop: '1rem'
+            marginBottom: '1.5rem'
           }}>
             <h3 style={{ 
               fontSize: '1.1rem', 
@@ -483,16 +482,60 @@ export default function Home() {
               marginBottom: '1rem',
               color: '#1976d2'
             }}>
-              💬 Ask a follow-up question to the agent
+              Bee Agents's analysis for {selectedCity}
             </h3>
-            <p style={{ 
-              fontSize: '0.9rem', 
-              color: '#666', 
-              marginBottom: '1rem',
-              fontStyle: 'italic'
+            
+            <div style={{ 
+              fontFamily: "'IBM Plex Sans', 'Inter', Arial, sans-serif",
+              marginBottom: '1.5rem',
+              background: 'rgba(255,255,255,0.9)',
+              padding: '1rem',
+              borderRadius: '8px',
+              border: '1px solid #e0e0e0'
             }}>
-              Ask if a specific proposal meets Goal 11 criteria or ask any other question about the recommendations.
-            </p>
+              <ReactMarkdown 
+                components={{
+                  h1: ({children}) => <h1 style={{fontSize: '1.4rem', fontWeight: 600, marginBottom: '1rem', color: '#1976d2'}}>{children}</h1>,
+                  h2: ({children}) => <h2 style={{fontSize: '1.2rem', fontWeight: 600, marginBottom: '0.8rem', color: '#1976d2'}}>{children}</h2>,
+                  h3: ({children}) => <h3 style={{fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.6rem', color: '#1976d2'}}>{children}</h3>,
+                  p: ({children}) => <p style={{marginBottom: '0.8rem', lineHeight: '1.6'}}>{children}</p>,
+                  ul: ({children}) => <ul style={{marginBottom: '0.8rem', paddingLeft: '1.5rem'}}>{children}</ul>,
+                  ol: ({children}) => <ol style={{marginBottom: '0.8rem', paddingLeft: '1.5rem'}}>{children}</ol>,
+                  li: ({children}) => <li style={{marginBottom: '0.3rem', lineHeight: '1.5'}}>{children}</li>,
+                  strong: ({children}) => <strong style={{fontWeight: 600, color: '#1976d2'}}>{children}</strong>,
+                  em: ({children}) => <em style={{fontStyle: 'italic', color: '#666'}}>{children}</em>,
+                  code: ({children}) => <code style={{background: '#f5f5f5', padding: '0.2rem 0.4rem', borderRadius: '4px', fontSize: '0.9rem', fontFamily: 'monospace'}}>{children}</code>,
+                  blockquote: ({children}) => <blockquote style={{borderLeft: '4px solid #1976d2', paddingLeft: '1rem', marginLeft: 0, fontStyle: 'italic', color: '#666'}}>{children}</blockquote>
+                }}
+              >
+                {agentResult}
+              </ReactMarkdown>
+            </div>
+            
+            {/* Encart de questions supplémentaires */}
+            <div style={{
+              border: '1px solid #e0e0e0',
+              borderRadius: '12px',
+              padding: '1.5rem',
+              background: 'rgba(255,255,255,0.9)',
+              marginTop: '1rem'
+            }}>
+              <h3 style={{ 
+                fontSize: '1.1rem', 
+                fontWeight: 600, 
+                marginBottom: '1rem',
+                color: '#1976d2'
+              }}>
+                💬 Ask a follow-up question to the agent
+              </h3>
+              <p style={{ 
+                fontSize: '0.9rem', 
+                color: '#666', 
+                marginBottom: '1rem',
+                fontStyle: 'italic'
+              }}>
+                Ask if a specific proposal meets Goal 11 criteria or ask any other question about the recommendations.
+              </p>
             
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
               <input
@@ -546,40 +589,59 @@ export default function Home() {
                 <strong style={{ color: '#1976d2', fontSize: '0.9rem' }}>Agent response:</strong>
                 <div style={{ 
                   marginTop: '0.5rem',
-                  whiteSpace: 'pre-wrap',
                   fontSize: '0.9rem',
                   lineHeight: '1.4'
                 }}>
-                  {questionResponse}
+                  <ReactMarkdown 
+                    components={{
+                      h1: ({children}) => <h1 style={{fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem', color: '#1976d2'}}>{children}</h1>,
+                      h2: ({children}) => <h2 style={{fontSize: '1rem', fontWeight: 600, marginBottom: '0.4rem', color: '#1976d2'}}>{children}</h2>,
+                      h3: ({children}) => <h3 style={{fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.3rem', color: '#1976d2'}}>{children}</h3>,
+                      p: ({children}) => <p style={{marginBottom: '0.5rem', lineHeight: '1.4'}}>{children}</p>,
+                      ul: ({children}) => <ul style={{marginBottom: '0.5rem', paddingLeft: '1.2rem'}}>{children}</ul>,
+                      ol: ({children}) => <ol style={{marginBottom: '0.5rem', paddingLeft: '1.2rem'}}>{children}</ol>,
+                      li: ({children}) => <li style={{marginBottom: '0.2rem', lineHeight: '1.4'}}>{children}</li>,
+                      strong: ({children}) => <strong style={{fontWeight: 600, color: '#1976d2'}}>{children}</strong>,
+                      em: ({children}) => <em style={{fontStyle: 'italic', color: '#666'}}>{children}</em>,
+                      code: ({children}) => <code style={{background: '#f5f5f5', padding: '0.1rem 0.3rem', borderRadius: '3px', fontSize: '0.85rem', fontFamily: 'monospace'}}>{children}</code>,
+                      blockquote: ({children}) => <blockquote style={{borderLeft: '3px solid #1976d2', paddingLeft: '0.8rem', marginLeft: 0, fontStyle: 'italic', color: '#666'}}>{children}</blockquote>
+                    }}
+                  >
+                    {questionResponse}
+                  </ReactMarkdown>
                 </div>
               </div>
             )}
             
-            {/* Bouton d'analyse climatique */}
-            <div style={{
-              border: '1px solid #e0e0e0',
-              borderRadius: '12px',
-              padding: '1.5rem',
-              background: 'rgba(248,251,255,0.8)',
-              marginTop: '1rem'
+
+          </div>
+          
+          {/* Section d'analyse climatique séparée */}
+          <div style={{
+            border: '1px solid #e0e0e0',
+            borderRadius: '12px',
+            padding: '1.5rem',
+            background: 'rgba(248,251,255,0.8)',
+            marginTop: '1.5rem'
+          }}>
+            <h3 style={{ 
+              fontSize: '1.1rem', 
+              fontWeight: 600, 
+              marginBottom: '1rem',
+              color: '#1976d2'
             }}>
-              <h3 style={{ 
-                fontSize: '1.1rem', 
-                fontWeight: 600, 
-                marginBottom: '1rem',
-                color: '#1976d2'
-              }}>
-                🌍 Climate Change Impact Analysis
-              </h3>
-              <p style={{ 
-                fontSize: '0.9rem', 
-                color: '#666', 
-                marginBottom: '1rem',
-                fontStyle: 'italic'
-              }}>
-                Get a detailed analysis of climate change impacts on {selectedCity} including risks, vulnerabilities, and adaptation strategies.
-              </p>
-              
+              🌍 Climate Change Impact Analysis
+            </h3>
+            <p style={{ 
+              fontSize: '0.9rem', 
+              color: '#666', 
+              marginBottom: '1rem',
+              fontStyle: 'italic'
+            }}>
+              Get a detailed analysis of climate change impacts on {selectedCity} including risks, vulnerabilities, and adaptation strategies.
+            </p>
+            
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
               <button
                 onClick={handleClimateAnalysis}
                 disabled={loadingClimateAnalysis}
@@ -607,26 +669,192 @@ export default function Home() {
                 )}
               </button>
               
-              {climateAnalysisResult && (
-                <div style={{
-                  background: 'rgba(255,255,255,0.9)',
-                  border: '1px solid #e0e0e0',
+              <button
+                onClick={() => setShowClimateMap(!showClimateMap)}
+                style={{
+                  padding: '0.8rem 1.5rem',
                   borderRadius: '8px',
-                  padding: '1rem',
-                  marginTop: '1rem'
-                }}>
-                  <strong style={{ color: '#1976d2', fontSize: '0.9rem' }}>Climate Analysis for {selectedCity}:</strong>
-                  <div style={{ 
-                    marginTop: '0.5rem',
-                    whiteSpace: 'pre-wrap',
-                    fontSize: '0.9rem',
-                    lineHeight: '1.4'
-                  }}>
-                    {climateAnalysisResult}
-                  </div>
-                </div>
-              )}
+                  border: '1px solid #4caf50',
+                  background: showClimateMap ? '#4caf50' : 'rgba(76, 175, 80, 0.1)',
+                  color: showClimateMap ? 'white' : '#4caf50',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+              >
+                {showClimateMap ? '🌍 Hide Climate Map' : '🗺️ Show Climate Map'}
+              </button>
+              
+              <button
+                onClick={() => setShowCompareMap(!showCompareMap)}
+                style={{
+                  padding: '0.8rem 1.5rem',
+                  borderRadius: '8px',
+                  border: '1px solid #ff9800',
+                  background: showCompareMap ? '#ff9800' : 'rgba(255, 152, 0, 0.1)',
+                  color: showCompareMap ? 'white' : '#ff9800',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+              >
+                                 {showCompareMap ? '🔄 Hide Climate Zones Map' : '🌍 Show Climate Zones Map'}
+              </button>
             </div>
+
+            {/* Carte Probable Futures */}
+            {showClimateMap && (
+              <div style={{
+                marginBottom: '2rem',
+                padding: '2rem',
+                background: 'rgba(255,255,255,0.08)',
+                borderRadius: '16px',
+                border: '2px solid rgba(255,255,255,0.15)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+              }}>
+                <h4 style={{ 
+                  fontSize: '1.3rem', 
+                  fontWeight: 700, 
+                  marginBottom: '1.5rem',
+                  color: '#4caf50',
+                  textAlign: 'center',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>
+                  🌡️ Climate Change Impact Map - Days above 32°C (90°F)
+                </h4>
+                <p style={{ 
+                  fontSize: '1rem', 
+                  color: '#555', 
+                  marginBottom: '2rem',
+                  textAlign: 'center',
+                  fontStyle: 'italic',
+                  lineHeight: '1.6',
+                  maxWidth: '800px',
+                  margin: '0 auto 2rem auto'
+                }}>
+                  This interactive map shows projected days above 32°C (90°F) under a 1.5°C warming scenario. 
+                  Red areas indicate more extreme heat days, while blue areas show fewer changes. 
+                  Explore the map to understand climate impacts on {selectedCity}.<br /><br />
+                  <strong>Data Sources:</strong> Climate projections from Probable Futures using IPCC scenarios, 
+                  with geospatial data powered by Mapbox. The map displays projected changes in extreme heat frequency 
+                  based on scientific climate models and historical weather patterns.
+                </p>
+                <div style={{
+                  height: '600px',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  border: '2px solid rgba(255,255,255,0.2)',
+                  background: 'rgba(255,255,255,0.05)',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
+                }}>
+                  <SimpleClimateMap 
+                    city={selectedCity || ""} 
+                    mapboxToken={mapboxToken}
+                    onMapLoad={() => console.log('Climate map loaded successfully')}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Carte de comparaison Probable Futures */}
+            {showCompareMap && (
+              <div style={{
+                marginBottom: '2rem',
+                padding: '2rem',
+                background: 'rgba(255,255,255,0.08)',
+                borderRadius: '16px',
+                border: '2px solid rgba(255,255,255,0.15)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+              }}>
+                <h4 style={{ 
+                  fontSize: '1.3rem', 
+                  fontWeight: 700, 
+                  marginBottom: '1.5rem',
+                  color: '#ff9800',
+                  textAlign: 'center',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>
+                  🌍 Climate Zones Map - 3°C Warming Scenario
+                </h4>
+                <p style={{ 
+                  fontSize: '1rem', 
+                  color: '#555', 
+                  marginBottom: '2rem',
+                  textAlign: 'center',
+                  fontStyle: 'italic',
+                  lineHeight: '1.6',
+                  maxWidth: '800px',
+                  margin: '0 auto 2rem auto'
+                }}>
+                  This interactive climate zones map shows how global warming will transform Earth's climate patterns under a 3°C warming scenario. 
+                  Different colors represent distinct climate zones that will shift as temperatures rise. 
+                  Explore how climate zones around {selectedCity} and globally will change.<br /><br />
+                  <strong>Data Sources:</strong> Climate projections from Probable Futures using IPCC scenarios and CORDEX-CORE regional climate models, 
+                  with geospatial data powered by Mapbox. The map displays projected climate zone shifts 
+                  based on scientific climate models and the Köppen-Geiger climate classification system.
+                </p>
+                <div style={{
+                  height: '600px',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  border: '2px solid rgba(255,255,255,0.2)',
+                  background: 'rgba(255,255,255,0.05)',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
+                }}>
+                  <SimpleCompareMap 
+                    city={selectedCity || ""} 
+                    mapboxToken={mapboxToken}
+                    onMapLoad={() => console.log('Comparison map loaded successfully')}
+                  />
+                </div>
+              </div>
+            )}
+
+
+            
+            {climateAnalysisResult && (
+              <div style={{
+                background: 'rgba(255,255,255,0.9)',
+                border: '1px solid #e0e0e0',
+                borderRadius: '8px',
+                padding: '1rem',
+                marginTop: '1rem'
+              }}>
+                <strong style={{ color: '#1976d2', fontSize: '0.9rem' }}>Climate Analysis for {selectedCity}:</strong>
+                <div style={{ 
+                  marginTop: '0.5rem',
+                  fontSize: '0.9rem',
+                  lineHeight: '1.4'
+                }}>
+                  <ReactMarkdown 
+                    components={{
+                      h1: ({children}) => <h1 style={{fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem', color: '#1976d2'}}>{children}</h1>,
+                      h2: ({children}) => <h2 style={{fontSize: '1rem', fontWeight: 600, marginBottom: '0.4rem', color: '#1976d2'}}>{children}</h2>,
+                      h3: ({children}) => <h3 style={{fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.3rem', color: '#1976d2'}}>{children}</h3>,
+                      p: ({children}) => <p style={{marginBottom: '0.5rem', lineHeight: '1.4'}}>{children}</p>,
+                      ul: ({children}) => <ul style={{marginBottom: '0.5rem', paddingLeft: '1.2rem'}}>{children}</ul>,
+                      ol: ({children}) => <ol style={{marginBottom: '0.5rem', paddingLeft: '1.2rem'}}>{children}</ol>,
+                      li: ({children}) => <li style={{marginBottom: '0.2rem', lineHeight: '1.4'}}>{children}</li>,
+                      strong: ({children}) => <strong style={{fontWeight: 600, color: '#1976d2'}}>{children}</strong>,
+                      em: ({children}) => <em style={{fontStyle: 'italic', color: '#666'}}>{children}</em>,
+                      code: ({children}) => <code style={{background: '#f5f5f5', padding: '0.1rem 0.3rem', borderRadius: '3px', fontSize: '0.85rem', fontFamily: 'monospace'}}>{children}</code>,
+                      blockquote: ({children}) => <blockquote style={{borderLeft: '3px solid #1976d2', paddingLeft: '0.8rem', marginLeft: 0, fontStyle: 'italic', color: '#666'}}>{children}</blockquote>
+                    }}
+                  >
+                    {climateAnalysisResult}
+                  </ReactMarkdown>
+                </div>
+              </div>
+            )}
+          </div>
           </div>
         </div>
       )}
