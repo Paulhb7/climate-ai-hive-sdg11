@@ -8,7 +8,8 @@ from beeai_framework.tools.search.wikipedia import WikipediaTool
 from beeai_framework.tools.weather.openmeteo import OpenMeteoTool
 from beeai_framework.workflows.agent import AgentWorkflow, AgentWorkflowInput
 from tools.onu_tools import UNSDGTool, UNSDGToolInput
-from utils.constants import COUNTRY_CODES, LOCATION_CODES, SDG11_TARGETS_INDICATORS
+from utils.constants import COUNTRY_CODES, LOCATION_CODES, SDG11_TARGETS_INDICATORS, CLIMATE_MODELS
+from climate_tool import ClimateChangeTool, ClimateMeteoToolInput
 
 # Charger les variables d'environnement depuis le fichier .env
 load_dotenv()
@@ -76,43 +77,64 @@ async def run_climate_agents(city: str, provider: str = None) -> str:
     # Sélectionner le modèle selon le provider
     selected_model = get_model(provider)
 
-    workflow = AgentWorkflow(name="Smart assistant")
+    workflow = AgentWorkflow(name="Climate change analysis")
 
     workflow.add_agent(
-        name="Researcher",
-        role="A diligent researcher.",
-        instructions="You look up and provide information about the impact of climate change on a specific city.",
-        tools=[WikipediaTool()],
-        llm=selected_model,
-    )
+        name="ClimateAnalyst",
+        role="An expert in climate change impact analysis.",
+            instructions=f"""
+            You are ClimateImpactAnalyst, an AI climatologist 
+            charged with distilling multi-model projections into clear, location-specific insights. 
+            Leverage the ClimateChangeTool to aggregate metrics from 1950, 2025, 2050, 
+            weigh each model’s strengths and weaknesses, and return a concise comparative table for decision-makers.
 
-    workflow.add_agent(
-        name="WeatherForecaster",
-        role="A weather reporter.",
-        instructions="You provide detailed weather reports and highlight any climate change trends or anomalies for the city.",
-        tools=[OpenMeteoTool()],
-        llm=selected_model,
-    )
+            Retrieve data
+            Call ClimateChangeTool to get the indicators for each year for {city}
 
-    workflow.add_agent(
-        name="DataSynthesizer",
-        role="A meticulous and creative data synthesizer",
-        instructions="You combine research and weather data to summarize the impact of climate change on the selected city.",
-        llm=selected_model,
+            Model–metric evaluation
+
+            For EACH AND ALL metric–year pair (7 metrics per year):
+            ─ Match model strengths / weaknesses to (a) the metric’s physical basis,
+            (b) the geographic features of LOCATION (coast, elevation, latitude, etc.).
+            ─ Score suitability on accuracy, temporal resolution, regional bias, and peer-review pedigree.
+            ─ If several models tie, either
+            • choose the single most appropriate by qualitative edge or
+            • create a weighted ensemble (explain the weights in ≤ 15 words).
+            Output one value per metric-year pair
+
+            Model Datas : {CLIMATE_MODELS}
+
+            Uncertainty & bias handling
+            ─ Apply bias-correction only if explicitly justified by documented weaknesses.
+            ─ Propagate uncertainty; report min–max range when available.
+
+            Output – return a comprehensive analysis of the climate change impact on the location in a
+            well-formatted markdown format.
+
+            Formatting rules:
+            • Numeric values → 2-decimal precision.
+            • Maintain original metric units.
+            • Keep “Rationale” succinct yet specific (name the decisive strength/weakness).
+            • If an ensemble is used, write “Ensemble(n)” where n = number of contributing models.
+            
+
+            Terminate with the table—no summary, no concluding sentence.""",
+            tools=[ClimateChangeTool()],
+        llm=selected_model
     )
 
     response = await workflow.run(
         inputs=[
             AgentWorkflowInput(
-                prompt=f"Quelles sont les conséquences du réchauffement climatique à {city} ? Donne des faits et exemples concrets.",
-            ),
-            AgentWorkflowInput(
-                prompt=f"Décris les tendances météorologiques récentes à {city} qui pourraient être liées au changement climatique. Mentionne les températures, précipitations, événements extrêmes, etc.",
-                expected_output="Détails météorologiques pertinents et tout lien possible avec le changement climatique.",
-            ),
-            AgentWorkflowInput(
-                prompt=f"Rédige une synthèse claire et concise de l'impact du réchauffement climatique à {city}, en t'appuyant sur les informations précédentes.",
-                expected_output=f"Un paragraphe expliquant l'impact du réchauffement climatique à {city}, avec des exemples précis et des données météorologiques récentes.",
+                prompt=(
+                    f"What is the climate change impact on {city} ? "
+                    
+                ),
+                expected_output=(
+                    f"""return a comprehensive analysis of the climate change impact on the location in a
+                        well-formatted markdown format.
+                    """
+                )
             ),
         ]
     )
