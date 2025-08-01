@@ -69,7 +69,7 @@ export default function SimpleClimateMap({ city, mapboxToken, onMapLoad }: Simpl
         borderRadius: '12px',
         border: '1px solid rgba(255,255,255,0.2)'
       }}>
-        <div style={{ textAlign: 'center', color: '#1976d2' }}>
+        <div style={{ textAlign: 'center', color: '#1a237e' }}>
           <div className="loader" style={{ margin: '0 auto 1rem', width: 32, height: 32 }} />
           <p>Loading climate map for {city}...</p>
         </div>

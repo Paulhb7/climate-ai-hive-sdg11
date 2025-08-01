@@ -5,6 +5,7 @@ import SimpleClimateMap from "./SimpleClimateMap";
 import SimpleCompareMap from "./SimpleCompareMap";
 import ReactMarkdown from "react-markdown";
 import AnimatedBackground from "./AnimatedBackground";
+import DataConnectionAnimation from "./DataConnectionAnimation";
 
 export default function Home() {
   const [city, setCity] = useState("");
@@ -16,6 +17,7 @@ export default function Home() {
   const [loadingAgent, setLoadingAgent] = useState(false);
   const [errorAgent, setErrorAgent] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState(true);
+  const [showConnectionAnimation, setShowConnectionAnimation] = useState(false);
   const [gettingLocation, setGettingLocation] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [additionalQuestion, setAdditionalQuestion] = useState("");
@@ -182,6 +184,15 @@ export default function Home() {
     setLoadingClimateAnalysis(false);
   };
 
+  // Fonction pour gérer la fin de l'animation de connexion
+  const handleConnectionComplete = () => {
+    setShowConnectionAnimation(false);
+    // Ajouter un petit délai pour une transition plus fluide
+    setTimeout(() => {
+      // L'interface principale s'affichera automatiquement
+    }, 300);
+  };
+
   return (
     <div style={{ minHeight: "100vh", minWidth: "100vw", position: "relative", overflow: "hidden" }}>
       {/* Arrière-plan animé sophistiqué */}
@@ -238,7 +249,7 @@ export default function Home() {
         }}>
           <button
             type="button"
-            onClick={e => { e.preventDefault?.(); setShowIntro(false); }}
+            onClick={e => { e.preventDefault?.(); setShowIntro(false); setShowConnectionAnimation(true); }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-2px)';
               e.currentTarget.style.boxShadow = '0 6px 20px rgba(25, 118, 210, 0.4)';
@@ -273,8 +284,15 @@ export default function Home() {
         </div>
         </>
       )}
-      {/* Carte et box de recherche seulement après intro */}
-      {!showIntro && (
+      {/* Animation de connexion aux sources de données */}
+      {showConnectionAnimation && (
+        <DataConnectionAnimation 
+          onComplete={handleConnectionComplete}
+        />
+      )}
+
+      {/* Carte et box de recherche seulement après intro et animation */}
+      {!showIntro && !showConnectionAnimation && (
         <>
           <div style={{
             position: "absolute",
@@ -368,7 +386,7 @@ export default function Home() {
                 className="glassmorphism"
                 style={{
                   background: "rgba(255,255,255,0.15)",
-                  color: gettingLocation ? "#888" : "#1976d2",
+                  color: gettingLocation ? "#888" : "#1a237e",
                   fontWeight: 600,
                   borderRadius: 12,
                   border: "1.5px solid rgba(255,255,255,0.3)",
@@ -441,7 +459,7 @@ export default function Home() {
                     borderRadius: 16, 
                     textAlign: 'center', 
                     fontWeight: 500, 
-                    color: '#1976d2', 
+                    color: '#1a237e', 
                     fontSize: '1.08rem', 
                     minWidth: 280,
                     background: 'rgba(255,255,255,0.08)',
@@ -462,7 +480,7 @@ export default function Home() {
                     </div>
                     <div style={{
                       fontSize: '0.95rem',
-                      color: '#1976d2',
+                      color: '#1a237e',
                       fontStyle: 'italic',
                       opacity: subtitleOpacity,
                       transition: 'opacity 0.3s ease-in-out',
@@ -678,17 +696,17 @@ export default function Home() {
                   }}>
                     <ReactMarkdown 
                       components={{
-                        h1: ({children}) => <h1 style={{fontSize: '1.4rem', fontWeight: 600, marginBottom: '1rem', color: '#1976d2'}}>{children}</h1>,
-                        h2: ({children}) => <h2 style={{fontSize: '1.2rem', fontWeight: 600, marginBottom: '0.8rem', color: '#1976d2'}}>{children}</h2>,
-                        h3: ({children}) => <h3 style={{fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.6rem', color: '#1976d2'}}>{children}</h3>,
+                        h1: ({children}) => <h1 style={{fontSize: '1.4rem', fontWeight: 600, marginBottom: '1rem', color: '#1a237e'}}>{children}</h1>,
+                        h2: ({children}) => <h2 style={{fontSize: '1.2rem', fontWeight: 600, marginBottom: '0.8rem', color: '#1a237e'}}>{children}</h2>,
+                        h3: ({children}) => <h3 style={{fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.6rem', color: '#1a237e'}}>{children}</h3>,
                         p: ({children}) => <p style={{marginBottom: '0.8rem', lineHeight: '1.6'}}>{children}</p>,
                         ul: ({children}) => <ul style={{marginBottom: '0.8rem', paddingLeft: '1.5rem'}}>{children}</ul>,
                         ol: ({children}) => <ol style={{marginBottom: '0.8rem', paddingLeft: '1.5rem'}}>{children}</ol>,
                         li: ({children}) => <li style={{marginBottom: '0.3rem', lineHeight: '1.5'}}>{children}</li>,
-                        strong: ({children}) => <strong style={{fontWeight: 600, color: '#1976d2'}}>{children}</strong>,
+                        strong: ({children}) => <strong style={{fontWeight: 600, color: '#1a237e'}}>{children}</strong>,
                         em: ({children}) => <em style={{fontStyle: 'italic', color: '#666'}}>{children}</em>,
                         code: ({children}) => <code style={{background: '#f5f5f5', padding: '0.2rem 0.4rem', borderRadius: '4px', fontSize: '0.9rem', fontFamily: 'monospace'}}>{children}</code>,
-                        blockquote: ({children}) => <blockquote style={{borderLeft: '4px solid #1976d2', paddingLeft: '1rem', marginLeft: 0, fontStyle: 'italic', color: '#666'}}>{children}</blockquote>
+                        blockquote: ({children}) => <blockquote style={{borderLeft: '4px solid #1a237e', paddingLeft: '1rem', marginLeft: 0, fontStyle: 'italic', color: '#666'}}>{children}</blockquote>
                       }}
                     >
                       {agentResult}
@@ -828,7 +846,7 @@ export default function Home() {
                         }}>
                           🐝
                         </div>
-                        <strong style={{ color: '#1976d2', fontSize: '1rem' }}>Hive Response:</strong>
+                        <strong style={{ color: '#1a237e', fontSize: '1rem' }}>Hive Response:</strong>
                       </div>
                       <div style={{ 
                         fontSize: '0.95rem',
@@ -836,17 +854,17 @@ export default function Home() {
                       }}>
                         <ReactMarkdown 
                           components={{
-                            h1: ({children}) => <h1 style={{fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem', color: '#1976d2'}}>{children}</h1>,
-                            h2: ({children}) => <h2 style={{fontSize: '1rem', fontWeight: 600, marginBottom: '0.4rem', color: '#1976d2'}}>{children}</h2>,
-                            h3: ({children}) => <h3 style={{fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.3rem', color: '#1976d2'}}>{children}</h3>,
+                            h1: ({children}) => <h1 style={{fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem', color: '#1a237e'}}>{children}</h1>,
+                            h2: ({children}) => <h2 style={{fontSize: '1rem', fontWeight: 600, marginBottom: '0.4rem', color: '#1a237e'}}>{children}</h2>,
+                            h3: ({children}) => <h3 style={{fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.3rem', color: '#1a237e'}}>{children}</h3>,
                             p: ({children}) => <p style={{marginBottom: '0.5rem', lineHeight: '1.4'}}>{children}</p>,
                             ul: ({children}) => <ul style={{marginBottom: '0.5rem', paddingLeft: '1.2rem'}}>{children}</ul>,
                             ol: ({children}) => <ol style={{marginBottom: '0.5rem', paddingLeft: '1.2rem'}}>{children}</ol>,
                             li: ({children}) => <li style={{marginBottom: '0.2rem', lineHeight: '1.4'}}>{children}</li>,
-                            strong: ({children}) => <strong style={{fontWeight: 600, color: '#1976d2'}}>{children}</strong>,
+                            strong: ({children}) => <strong style={{fontWeight: 600, color: '#1a237e'}}>{children}</strong>,
                             em: ({children}) => <em style={{fontStyle: 'italic', color: '#666'}}>{children}</em>,
                             code: ({children}) => <code style={{background: '#f5f5f5', padding: '0.1rem 0.3rem', borderRadius: '3px', fontSize: '0.85rem', fontFamily: 'monospace'}}>{children}</code>,
-                            blockquote: ({children}) => <blockquote style={{borderLeft: '3px solid #1976d2', paddingLeft: '0.8rem', marginLeft: 0, fontStyle: 'italic', color: '#666'}}>{children}</blockquote>
+                            blockquote: ({children}) => <blockquote style={{borderLeft: '3px solid #1a237e', paddingLeft: '0.8rem', marginLeft: 0, fontStyle: 'italic', color: '#666'}}>{children}</blockquote>
                           }}
                         >
                           {questionResponse}
@@ -1267,7 +1285,7 @@ export default function Home() {
                         }}>
                           🌡️
                         </div>
-                        <strong style={{ color: '#1976d2', fontSize: '1rem' }}>Climate Analysis:</strong>
+                        <strong style={{ color: '#1a237e', fontSize: '1rem' }}>Climate Analysis:</strong>
                       </div>
                       <div style={{ 
                         fontSize: '0.9rem',
@@ -1275,17 +1293,17 @@ export default function Home() {
                       }}>
                         <ReactMarkdown 
                           components={{
-                            h1: ({children}) => <h1 style={{fontSize: '1rem', fontWeight: 600, marginBottom: '0.4rem', color: '#1976d2'}}>{children}</h1>,
-                            h2: ({children}) => <h2 style={{fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.3rem', color: '#1976d2'}}>{children}</h2>,
-                            h3: ({children}) => <h3 style={{fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.2rem', color: '#1976d2'}}>{children}</h3>,
+                            h1: ({children}) => <h1 style={{fontSize: '1rem', fontWeight: 600, marginBottom: '0.4rem', color: '#1a237e'}}>{children}</h1>,
+                            h2: ({children}) => <h2 style={{fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.3rem', color: '#1a237e'}}>{children}</h2>,
+                            h3: ({children}) => <h3 style={{fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.2rem', color: '#1a237e'}}>{children}</h3>,
                             p: ({children}) => <p style={{marginBottom: '0.4rem', lineHeight: '1.3'}}>{children}</p>,
                             ul: ({children}) => <ul style={{marginBottom: '0.4rem', paddingLeft: '1rem'}}>{children}</ul>,
                             ol: ({children}) => <ol style={{marginBottom: '0.4rem', paddingLeft: '1rem'}}>{children}</ol>,
                             li: ({children}) => <li style={{marginBottom: '0.1rem', lineHeight: '1.3'}}>{children}</li>,
-                            strong: ({children}) => <strong style={{fontWeight: 600, color: '#1976d2'}}>{children}</strong>,
+                            strong: ({children}) => <strong style={{fontWeight: 600, color: '#1a237e'}}>{children}</strong>,
                             em: ({children}) => <em style={{fontStyle: 'italic', color: '#666'}}>{children}</em>,
                             code: ({children}) => <code style={{background: '#f5f5f5', padding: '0.1rem 0.2rem', borderRadius: '2px', fontSize: '0.8rem', fontFamily: 'monospace'}}>{children}</code>,
-                            blockquote: ({children}) => <blockquote style={{borderLeft: '2px solid #1976d2', paddingLeft: '0.6rem', marginLeft: 0, fontStyle: 'italic', color: '#666'}}>{children}</blockquote>
+                            blockquote: ({children}) => <blockquote style={{borderLeft: '2px solid #1a237e', paddingLeft: '0.6rem', marginLeft: 0, fontStyle: 'italic', color: '#666'}}>{children}</blockquote>
                           }}
                         >
                           {climateAnalysisResult}

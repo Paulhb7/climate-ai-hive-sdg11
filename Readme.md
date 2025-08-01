@@ -116,18 +116,12 @@ result = await run_climate_agents("Paris", provider="watsonx")
 
 ### API REST
 
-Toutes les routes API acceptent un paramètre `provider` optionnel :
+L'API utilise automatiquement le provider configuré dans le fichier `.env` :
 
 ```bash
-# Utilisation avec Groq (par défaut)
 curl -X POST "http://localhost:8000/climate-impact" \
   -H "Content-Type: application/json" \
   -d '{"city": "Paris"}'
-
-# Utilisation avec WatsonX
-curl -X POST "http://localhost:8000/climate-impact" \
-  -H "Content-Type: application/json" \
-  -d '{"city": "Paris", "provider": "watsonx"}'
 ```
 
 ## 📡 Endpoints API
@@ -137,7 +131,6 @@ Analyse l'impact du changement climatique sur une ville.
 
 **Paramètres :**
 - `city` (requis) : Nom de la ville
-- `provider` (optionnel) : "groq" ou "watsonx" (défaut: "groq")
 
 ### POST /recommendations
 Fournit des recommandations pour rendre une ville plus durable.
@@ -145,14 +138,12 @@ Fournit des recommandations pour rendre une ville plus durable.
 **Paramètres :**
 - `city` (requis) : Nom de la ville
 - `question` (optionnel) : Question spécifique pour validation SDG11
-- `provider` (optionnel) : "groq" ou "watsonx" (défaut: "groq")
 
 ### POST /un-projects
 Liste les projets ONU pertinents pour une ville.
 
 **Paramètres :**
 - `city` (requis) : Nom de la ville
-- `provider` (optionnel) : "groq" ou "watsonx" (défaut: "groq")
 
 ### POST /sdg11-validation
 Valide si une proposition est alignée avec l'ODD 11.
@@ -160,7 +151,6 @@ Valide si une proposition est alignée avec l'ODD 11.
 **Paramètres :**
 - `city` (requis) : Nom de la ville
 - `question` (requis) : Proposition à valider
-- `provider` (optionnel) : "groq" ou "watsonx" (défaut: "groq")
 
 ## 🧪 Tests
 
