@@ -3,6 +3,7 @@ import asyncio
 from dotenv import load_dotenv
 from beeai_framework.backend.chat import ChatModel
 from beeai_framework.adapters.groq import GroqChatModel
+from beeai_framework.adapters.watsonx import WatsonxChatModel
 from beeai_framework.tools.search.wikipedia import WikipediaTool
 from beeai_framework.tools.weather.openmeteo import OpenMeteoTool
 from beeai_framework.workflows.agent import AgentWorkflow, AgentWorkflowInput
@@ -12,15 +13,68 @@ from utils.constants import COUNTRY_CODES, LOCATION_CODES, SDG11_TARGETS_INDICAT
 # Charger les variables d'environnement depuis le fichier .env
 load_dotenv()
 
-# Récupérer la clé API depuis les variables d'environnement
+# Récupérer les clés API depuis les variables d'environnement
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+WATSONX_PROJECT_ID = os.getenv("WATSONX_PROJECT_ID")
+WATSONX_API_KEY = os.getenv("WATSONX_API_KEY")
+WATSONX_API_URL = os.getenv("WATSONX_API_URL")
+
+# Récupérer les modèles par défaut depuis les variables d'environnement
+DEFAULT_GROQ_MODEL = os.getenv("DEFAULT_GROQ_MODEL", "qwen/qwen3-32b")
+DEFAULT_WATSONX_MODEL = os.getenv("DEFAULT_WATSONX_MODEL", "llama-3-3-70b-instruct")
+DEFAULT_PROVIDER = os.getenv("DEFAULT_PROVIDER", "groq")
+
 if not GROQ_API_KEY:
     raise ValueError("GROQ_API_KEY not found in environment variables. Please check your .env file.")
 
-llama_model = ChatModel.from_name("groq:qwen/qwen3-32b")
-granite = ChatModel.from_name("groq:qwen/qwen3-32b")
+def get_model(provider: str = None, model_name: str = None) -> ChatModel:
+    """
+    Fonction pour sélectionner le modèle selon le provider spécifié
+    
+    Args:
+        provider: "groq" ou "watsonx" (si None, utilise DEFAULT_PROVIDER)
+        model_name: nom spécifique du modèle (si None, utilise le modèle par défaut du provider)
+    
+    Returns:
+        ChatModel configuré
+    """
+    # Utiliser le provider par défaut si aucun n'est spécifié
+    if provider is None:
+        provider = DEFAULT_PROVIDER
+    
+    if provider.lower() == "groq":
+        if model_name:
+            return ChatModel.from_name(f"groq:{model_name}")
+        return ChatModel.from_name(f"groq:{DEFAULT_GROQ_MODEL}")
+    
+    elif provider.lower() == "watsonx":
+        if not WATSONX_PROJECT_ID or not WATSONX_API_KEY:
+            raise ValueError("WATSONX_PROJECT_ID and WATSONX_API_KEY must be set for WatsonX provider")
+        
+        if model_name:
+            return ChatModel.from_name(f"watsonx:{model_name}")
+        
+        # Configuration WatsonX avec les paramètres d'environnement
+        settings = {
+            "project_id": WATSONX_PROJECT_ID,
+            "api_key": WATSONX_API_KEY,
+        }
+        
+        if WATSONX_API_URL:
+            settings["base_url"] = WATSONX_API_URL
+            
+        return ChatModel.from_name(f"watsonx:{DEFAULT_WATSONX_MODEL}", settings)
+    
+    else:
+        raise ValueError(f"Unsupported provider: {provider}. Supported providers: groq, watsonx")
 
-async def run_climate_agents(city: str) -> str:
+# Modèles par défaut
+llama_model = get_model()
+granite = get_model()
+
+async def run_climate_agents(city: str, provider: str = None) -> str:
+    # Sélectionner le modèle selon le provider
+    selected_model = get_model(provider)
 
     workflow = AgentWorkflow(name="Smart assistant")
 
@@ -29,7 +83,7 @@ async def run_climate_agents(city: str) -> str:
         role="A diligent researcher.",
         instructions="You look up and provide information about the impact of climate change on a specific city.",
         tools=[WikipediaTool()],
-        llm=llama_model,
+        llm=selected_model,
     )
 
     workflow.add_agent(
@@ -37,14 +91,14 @@ async def run_climate_agents(city: str) -> str:
         role="A weather reporter.",
         instructions="You provide detailed weather reports and highlight any climate change trends or anomalies for the city.",
         tools=[OpenMeteoTool()],
-        llm=llama_model,
+        llm=selected_model,
     )
 
     workflow.add_agent(
         name="DataSynthesizer",
         role="A meticulous and creative data synthesizer",
         instructions="You combine research and weather data to summarize the impact of climate change on the selected city.",
-        llm=llama_model,
+        llm=selected_model,
     )
 
     response = await workflow.run(
@@ -64,8 +118,10 @@ async def run_climate_agents(city: str) -> str:
     )
     return response.result.final_answer
 
-async def run_recommendation_agent(city: str) -> str:
-    llm = ChatModel.from_name("groq:qwen/qwen3-32b")
+async def run_recommendation_agent(city: str, provider: str = None) -> str:
+    # Sélectionner le modèle selon le provider
+    selected_model = get_model(provider)
+    
     workflow = AgentWorkflow(name="Recommendation assistant")
 
     workflow.add_agent(
@@ -84,7 +140,7 @@ async def run_recommendation_agent(city: str) -> str:
             {LOCATION_CODES}
             """),
             tools=[UNSDGTool()],
-        llm=llama_model,  # corrected: use the local 'llm' object, not 'llama_model'
+        llm=selected_model,
     )
 
     response = await workflow.run(
@@ -103,8 +159,15 @@ async def run_recommendation_agent(city: str) -> str:
     )
     return response.result.final_answer
 
-async def run_un_projects_agent(city: str) -> str:
-    llm = ChatModel.from_name("groq:llama-3.1-8b-instant")
+async def run_un_projects_agent(city: str, provider: str = None) -> str:
+    # Sélectionner le modèle selon le provider
+    # Pour les projets UN, on peut utiliser un modèle différent si spécifié
+    un_projects_model = os.getenv("UN_PROJECTS_MODEL")
+    if un_projects_model and provider:
+        selected_model = get_model(provider, un_projects_model)
+    else:
+        selected_model = get_model(provider)
+    
     workflow = AgentWorkflow(name="UN Projects recommender")
 
     workflow.add_agent(
@@ -112,7 +175,7 @@ async def run_un_projects_agent(city: str) -> str:
         role="An expert in United Nations sustainable development projects.",
         instructions="You highlight and describe real United Nations projects already developed on climate change and sustainable cities, that are relevant or similar to the user's city or context. Give concrete examples, project names, and a short description for each.",
         tools=[WikipediaTool()],
-        llm=llm,
+        llm=selected_model,
     )
 
     response = await workflow.run(
@@ -132,11 +195,13 @@ async def run_un_projects_agent(city: str) -> str:
     )
     return response.result.final_answer
 
-async def run_sdg11_validation_agent(city: str, user_question: str) -> str:
+async def run_sdg11_validation_agent(city: str, user_question: str, provider: str = None) -> str:
     """
     Agent qui analyse si une proposition ou question utilisateur rentre dans les critères SDG11
     """
-    llm = ChatModel.from_name("groq:qwen/qwen3-32b")
+    # Sélectionner le modèle selon le provider
+    selected_model = get_model(provider)
+    
     workflow = AgentWorkflow(name="SDG11 Validation Expert")
 
     workflow.add_agent(
@@ -154,7 +219,7 @@ async def run_sdg11_validation_agent(city: str, user_question: str) -> str:
             "4. Suggestions for improvement or additional considerations\n"
             "5. A clear YES/NO assessment with explanation"
         ),
-        llm=llm,
+        llm=selected_model,
     )
 
     response = await workflow.run(
