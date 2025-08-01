@@ -1,3 +1,5 @@
 .venv/
 node_modules/
 .next/
+.env
+__pycache__

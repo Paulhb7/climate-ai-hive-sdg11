@@ -33,7 +33,7 @@ export default function Mapbox3DMap({ city, mapboxToken, mapStyle, animate = tru
     mapRef.current = map;
     map.addControl(new mapboxgl.NavigationControl());
     map.on('style.load', () => {
-      map.setConfigProperty('basemap', 'lightPreset', 'dusk');
+      map.setConfigProperty('basemap', 'lightPreset', 'day');
     });
     // Nettoyage
     return () => {

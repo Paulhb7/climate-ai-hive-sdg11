@@ -1,4 +1,6 @@
 beeai-framework
 beeai-framework[wikipedia]
+beeai-framework[acp]
 fastapi
 uvicorn
+python-dotenv
