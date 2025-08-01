@@ -101,7 +101,7 @@ export default function SimpleClimateMap({ city, mapboxToken, onMapLoad }: Simpl
   }
 
   // URL avec vue globe centrée sur l'hémisphère nord, puis centrage sur la ville si demandé
-  const baseUrl = `https://probablefutures.org/maps/?selected_map=days_above_32c&version=latest&scenario=1.5&view=globe#2/45/0`;
+  const baseUrl = `https://probablefutures.org/maps/?selected_map=days_above_32c&version=latest&scenario=1.5&view=globe#1/45/0`;
   const cityUrl = `https://probablefutures.org/maps/?selected_map=days_above_32c&version=latest&scenario=1.5&view=globe#6/${coordinates.latitude}/${coordinates.longitude}`;
   
   const currentUrl = showCity ? cityUrl : baseUrl;

@@ -66,6 +66,83 @@ export default function Home() {
     }
   }, [loadingAgent, subtitleMessages.length, selectedCity]);
 
+  // Effet pour dessiner les alvéoles hexagonales dans l'interface de résultats
+  useEffect(() => {
+    if (agentResult) {
+      const canvas = document.getElementById('honeycombCanvas') as HTMLCanvasElement;
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const resizeCanvas = () => {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+      };
+
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      // Dessiner un hexagone
+      const drawHexagon = (x: number, y: number, size: number, opacity: number) => {
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+          const angle = (i * Math.PI) / 3;
+          const px = x + size * Math.cos(angle);
+          const py = y + size * Math.sin(angle);
+          if (i === 0) {
+            ctx.moveTo(px, py);
+          } else {
+            ctx.lineTo(px, py);
+          }
+        }
+        ctx.closePath();
+        ctx.fillStyle = `rgba(144, 202, 249, ${opacity})`;
+        ctx.fill();
+      };
+
+      // Initialiser la grille hexagonale
+      const hexSize = 30;
+      const rows = Math.ceil(canvas.height / (hexSize * 1.5)) + 2;
+      const cols = Math.ceil(canvas.width / (hexSize * Math.sqrt(3))) + 2;
+
+      const hexagons: Array<{x: number, y: number, opacity: number, pulse: number}> = [];
+      
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          const x = col * hexSize * Math.sqrt(3) + (row % 2) * (hexSize * Math.sqrt(3)) / 2;
+          const y = row * hexSize * 1.5;
+          
+          hexagons.push({
+            x,
+            y,
+            opacity: Math.random() * 0.04 + 0.02,
+            pulse: Math.random() * Math.PI * 2
+          });
+        }
+      }
+
+      // Animation des hexagones
+      const animate = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        hexagons.forEach(hex => {
+          hex.pulse += 0.01;
+          hex.opacity = 0.02 + 0.03 * Math.sin(hex.pulse);
+          drawHexagon(hex.x, hex.y, hexSize, hex.opacity);
+        });
+
+        requestAnimationFrame(animate);
+      };
+
+      animate();
+
+      return () => {
+        window.removeEventListener('resize', resizeCanvas);
+      };
+    }
+  }, [agentResult]);
+
 
   const handleShowOnMap = (e: React.FormEvent) => {
     e.preventDefault();
@@ -206,15 +283,15 @@ export default function Home() {
           left: "50%",
           transform: "translate(-50%, -50%)",
           zIndex: 10,
-          minWidth: 850,
-          maxWidth: "1200px",
-          maxHeight: "80vh",
+          minWidth: 950,
+          maxWidth: "1400px",
+          maxHeight: "95vh",
           background: "rgba(20, 33, 61, 0.08)",
           color: "#fff",
           boxShadow: "0 8px 32px 0 rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15)",
           border: '1px solid rgba(255,255,255,0.25)',
           borderRadius: 24,
-          padding: "3rem 2.5rem",
+          padding: "2.5rem 2rem",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -225,18 +302,231 @@ export default function Home() {
           WebkitBackdropFilter: "blur(25px)",
           overflow: "auto"
         }}>
-          <h1 style={{ fontSize: "2.2rem", fontWeight: 700, marginBottom: 8 }}>🌍🐝 Climate Hive</h1>
-          <h2 style={{ fontSize: "1.1rem", fontWeight: 400, marginBottom: 20, color: "#90caf9", fontStyle: "italic" }}>🤖 AI-Powered Urban Climate Adaptation Platform</h2>
-          <p style={{ marginBottom: 0, lineHeight: "1.6" }}>
-            Welcome to Climate Hive, an AI-powered platform designed to support cities in their climate adaptation journey by aligning with UN Sustainable Development Goal 11.<br /><br />
-            <b>🎯 Our Mission:</b><br />
-            • 🌡️ Analyze climate change impacts on cities worldwide<br />
-            • 🏙️ Provide personalized recommendations for urban resilience<br />
-            • 🏛️ Showcase UN projects and initiatives for sustainable cities<br />
-            • 📋 Help cities understand and implement SDG 11 targets<br /><br />
-            <b>⚡ Technology:</b><br />
-            Powered by BeeAI agents built on WatsonX and Granite models, with data from UN SDG API and OpenMeteo climate services.
-          </p>
+          <h1 style={{ fontSize: "1.8rem", fontWeight: 700, marginBottom: 20 }}>🌍🐝 Climate Hive</h1>
+          
+                      {/* Alvéoles des trois agents */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '5.5rem',
+              marginBottom: '1.5rem',
+              flexWrap: 'wrap'
+            }}>
+              {/* Agent ONU */}
+              <div style={{
+                width: '90px',
+                height: '90px',
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 193, 7, 0.05))',
+              border: '2px solid rgba(255, 215, 0, 0.3)',
+              borderRadius: '50%',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              boxShadow: '0 8px 32px rgba(255, 215, 0, 0.2), inset 0 1px 0 rgba(255, 215, 0, 0.1)',
+              animation: 'pulse 3s ease-in-out infinite'
+            }}>
+                              <div style={{
+                  width: '60px',
+                  height: '60px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.8), rgba(255, 193, 7, 0.6))',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.8rem',
+                  boxShadow: '0 4px 16px rgba(255, 215, 0, 0.4)'
+                }}>
+                <img 
+                  src="/onu-flag.png" 
+                  alt="UN Agent" 
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    borderRadius: '50%'
+                  }}
+                />
+              </div>
+              <div style={{
+                position: 'absolute',
+                bottom: '-25px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                fontSize: '0.7rem',
+                fontWeight: 600,
+                color: 'rgba(255, 215, 0, 0.9)',
+                textAlign: 'center',
+                whiteSpace: 'nowrap'
+              }}>
+                UN Agent
+              </div>
+            </div>
+
+            {/* Agent Climate Change */}
+            <div style={{
+              width: '90px',
+              height: '90px',
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(102, 187, 106, 0.05))',
+              border: '2px solid rgba(76, 175, 80, 0.3)',
+              borderRadius: '50%',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              boxShadow: '0 8px 32px rgba(76, 175, 80, 0.2), inset 0 1px 0 rgba(76, 175, 80, 0.1)',
+              animation: 'pulse 3s ease-in-out infinite 1s'
+            }}>
+                              <div style={{
+                  width: '60px',
+                  height: '60px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, rgba(76, 175, 80, 0.8), rgba(102, 187, 106, 0.6))',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.8rem',
+                  boxShadow: '0 4px 16px rgba(76, 175, 80, 0.4)'
+                }}>
+                  🌡️
+                </div>
+                              <div style={{
+                  position: 'absolute',
+                  bottom: '-25px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  fontSize: '0.7rem',
+                  fontWeight: 600,
+                  color: 'rgba(76, 175, 80, 0.9)',
+                  textAlign: 'center',
+                  whiteSpace: 'nowrap'
+                }}>
+                  Climate Agent
+                </div>
+            </div>
+
+            {/* Agent Cities Advisor */}
+            <div style={{
+              width: '90px',
+              height: '90px',
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(66, 165, 245, 0.05))',
+              border: '2px solid rgba(33, 150, 243, 0.3)',
+              borderRadius: '50%',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              boxShadow: '0 8px 32px rgba(33, 150, 243, 0.2), inset 0 1px 0 rgba(33, 150, 243, 0.1)',
+              animation: 'pulse 3s ease-in-out infinite 2s'
+            }}>
+                              <div style={{
+                  width: '60px',
+                  height: '60px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, rgba(33, 150, 243, 0.8), rgba(66, 165, 245, 0.6))',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.8rem',
+                  boxShadow: '0 4px 16px rgba(33, 150, 243, 0.4)'
+                }}>
+                  🏙️
+                </div>
+                              <div style={{
+                  position: 'absolute',
+                  bottom: '-25px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  fontSize: '0.7rem',
+                  fontWeight: 600,
+                  color: 'rgba(33, 150, 243, 0.9)',
+                  textAlign: 'center',
+                  whiteSpace: 'nowrap'
+                }}>
+                  Cities Advisor
+                </div>
+            </div>
+          </div>
+
+          {/* Box Description */}
+          <div style={{
+            marginTop: '1.5rem',
+            padding: '1.5rem',
+            width: '1000px',
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03))',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '16px',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+          }}>
+
+            <p style={{
+              margin: 0,
+              fontSize: '0.9rem',
+              lineHeight: '1.5',
+              color: 'rgba(255, 255, 255, 0.9)'
+            }}>
+              <b>🎯 Mission:</b> Analyze climate impacts, provide urban resilience recommendations, and showcase UN sustainable city initiatives through SDG 11.
+            </p>
+          </div>
+          
+          {/* Box Technology */}
+          <div style={{
+            marginTop: '2rem',
+            padding: '1.5rem',
+            width: '1000px',
+            background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 193, 7, 0.05))',
+            border: '1px solid rgba(255, 215, 0, 0.3)',
+            borderRadius: '16px',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            boxShadow: '0 8px 32px rgba(255, 215, 0, 0.2), inset 0 1px 0 rgba(255, 215, 0, 0.1)'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.8rem',
+              marginBottom: '1rem'
+            }}>
+              <div style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.8), rgba(255, 193, 7, 0.6))',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.2rem',
+                boxShadow: '0 4px 12px rgba(255, 215, 0, 0.3)'
+              }}>
+                ⚡
+              </div>
+              <h3 style={{
+                fontSize: '1rem',
+                fontWeight: 700,
+                margin: 0,
+                color: 'rgba(255, 215, 0, 0.9)',
+                textShadow: '0 1px 2px rgba(0,0,0,0.3)'
+              }}>
+                Technology
+              </h3>
+            </div>
+            <p style={{
+              margin: 0,
+              fontSize: '0.85rem',
+              lineHeight: '1.5',
+              color: 'rgba(255, 255, 255, 0.9)'
+            }}>
+              Powered by <strong>BeeAI agents</strong> built on <strong>WatsonX</strong> and <strong>Granite</strong> models, with data from <strong>UN SDG API</strong> and <strong>OpenMeteo</strong> climate services.
+            </p>
+          </div>
         </div>
         <div style={{
           position: "absolute",
@@ -260,15 +550,15 @@ export default function Home() {
             }}
             className="glassmorphism"
             style={{
-              background: "linear-gradient(135deg, rgba(25, 118, 210, 0.9), rgba(66, 165, 245, 0.8))",
-              color: "#fff",
+              background: "linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 193, 7, 0.8))",
+              color: "#ffffff",
               fontWeight: 700,
               borderRadius: 16,
-              border: "1px solid rgba(255, 255, 255, 0.3)",
-              boxShadow: "0 4px 20px rgba(25, 118, 210, 0.4), inset 0 1px 0 rgba(255,255,255,0.2)",
+              border: "1px solid rgba(255, 215, 0, 0.3)",
+              boxShadow: "0 4px 20px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.2)",
               height: 52,
               minWidth: 180,
-              fontSize: "1.1rem",
+              fontSize: "0.9rem",
               padding: "0 2rem",
               cursor: "pointer",
               transition: "all 0.3s cubic-bezier(.4,2,.6,1)",
@@ -529,13 +819,27 @@ export default function Home() {
           fontSize: '0.9rem',
           lineHeight: '1.5',
           overflow: 'hidden',
-          background: 'rgba(20, 33, 61, 0.95)',
+          background: 'linear-gradient(135deg, hsl(220, 70%, 15%), hsl(230, 60%, 20%), hsl(240, 50%, 25%))',
           backdropFilter: 'blur(30px)',
           WebkitBackdropFilter: 'blur(30px)',
           border: '2px solid rgba(255, 215, 0, 0.3)',
           boxShadow: '0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255, 215, 0, 0.2)',
           zIndex: 1000
         }}>
+          {/* Canvas pour les alvéoles hexagonales */}
+          <canvas
+            id="honeycombCanvas"
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              pointerEvents: 'none',
+              zIndex: 0,
+              opacity: 0.5
+            }}
+          />
           {/* Header de la ruche */}
           <div style={{ 
             display: 'flex', 
@@ -545,7 +849,8 @@ export default function Home() {
             background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 193, 7, 0.05))',
             borderBottom: '2px solid rgba(255, 215, 0, 0.2)',
             position: 'relative',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            zIndex: 1
           }}>
             {/* Effet de particules d'abeilles en arrière-plan */}
             <div style={{
@@ -626,13 +931,17 @@ export default function Home() {
           <div style={{ 
             display: 'flex', 
             height: 'calc(85vh - 120px)', 
-            overflow: 'hidden' 
+            overflow: 'hidden',
+            position: 'relative',
+            zIndex: 1
           }}>
             {/* Section principale - Analyse des agents */}
             <div style={{
               flex: 1,
               padding: '2rem',
-              overflow: 'auto'
+              overflow: 'auto',
+              position: 'relative',
+              zIndex: 1
             }}>
               {/* Cellule de miel - Analyse principale */}
               <div style={{
@@ -696,17 +1005,17 @@ export default function Home() {
                   }}>
                     <ReactMarkdown 
                       components={{
-                        h1: ({children}) => <h1 style={{fontSize: '1.4rem', fontWeight: 600, marginBottom: '1rem', color: '#1a237e'}}>{children}</h1>,
-                        h2: ({children}) => <h2 style={{fontSize: '1.2rem', fontWeight: 600, marginBottom: '0.8rem', color: '#1a237e'}}>{children}</h2>,
-                        h3: ({children}) => <h3 style={{fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.6rem', color: '#1a237e'}}>{children}</h3>,
-                        p: ({children}) => <p style={{marginBottom: '0.8rem', lineHeight: '1.6'}}>{children}</p>,
-                        ul: ({children}) => <ul style={{marginBottom: '0.8rem', paddingLeft: '1.5rem'}}>{children}</ul>,
-                        ol: ({children}) => <ol style={{marginBottom: '0.8rem', paddingLeft: '1.5rem'}}>{children}</ol>,
-                        li: ({children}) => <li style={{marginBottom: '0.3rem', lineHeight: '1.5'}}>{children}</li>,
+                        h1: ({children}) => <h1 style={{fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.8rem', color: '#1a237e'}}>{children}</h1>,
+                        h2: ({children}) => <h2 style={{fontSize: '1rem', fontWeight: 600, marginBottom: '0.7rem', color: '#1a237e'}}>{children}</h2>,
+                        h3: ({children}) => <h3 style={{fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.5rem', color: '#1a237e'}}>{children}</h3>,
+                        p: ({children}) => <p style={{marginBottom: '0.7rem', lineHeight: '1.5', fontSize: '0.85rem'}}>{children}</p>,
+                        ul: ({children}) => <ul style={{marginBottom: '0.7rem', paddingLeft: '1.3rem', fontSize: '0.85rem'}}>{children}</ul>,
+                        ol: ({children}) => <ol style={{marginBottom: '0.7rem', paddingLeft: '1.3rem', fontSize: '0.85rem'}}>{children}</ol>,
+                        li: ({children}) => <li style={{marginBottom: '0.25rem', lineHeight: '1.4', fontSize: '0.85rem'}}>{children}</li>,
                         strong: ({children}) => <strong style={{fontWeight: 600, color: '#1a237e'}}>{children}</strong>,
                         em: ({children}) => <em style={{fontStyle: 'italic', color: '#666'}}>{children}</em>,
-                        code: ({children}) => <code style={{background: '#f5f5f5', padding: '0.2rem 0.4rem', borderRadius: '4px', fontSize: '0.9rem', fontFamily: 'monospace'}}>{children}</code>,
-                        blockquote: ({children}) => <blockquote style={{borderLeft: '4px solid #1a237e', paddingLeft: '1rem', marginLeft: 0, fontStyle: 'italic', color: '#666'}}>{children}</blockquote>
+                        code: ({children}) => <code style={{background: '#f5f5f5', padding: '0.15rem 0.3rem', borderRadius: '3px', fontSize: '0.85rem', fontFamily: 'monospace'}}>{children}</code>,
+                        blockquote: ({children}) => <blockquote style={{borderLeft: '3px solid #1a237e', paddingLeft: '0.8rem', marginLeft: 0, fontStyle: 'italic', color: '#666', fontSize: '0.9rem'}}>{children}</blockquote>
                       }}
                     >
                       {agentResult}
@@ -933,7 +1242,6 @@ export default function Home() {
                        marginBottom: '1.5rem',
                        fontStyle: 'italic'
                      }}>
-                       Interactive climate change maps showing projected impacts and climate zone shifts for {selectedCity}.
                      </p>
                      
                      {/* Carte Probable Futures */}
@@ -983,7 +1291,7 @@ export default function Home() {
                                🌡️
                              </div>
                              <h4 style={{ 
-                               fontSize: '1.8rem', 
+                               fontSize: '1rem', 
                                fontWeight: 700, 
                                margin: 0,
                                color: 'rgba(255, 215, 0, 0.9)',
@@ -996,23 +1304,20 @@ export default function Home() {
                              </h4>
                            </div>
                            
-                           <p style={{ 
-                             fontSize: '1.1rem', 
-                             color: 'rgba(255,255,255,0.9)', 
-                             marginBottom: '2rem',
-                             textAlign: 'center',
-                             fontStyle: 'italic',
-                             lineHeight: '1.6',
-                             maxWidth: '800px',
-                             margin: '0 auto 2rem auto'
-                           }}>
-                             This interactive map shows projected days above 32°C (90°F) under a 1.5°C warming scenario. 
-                             Red areas indicate more extreme heat days, while blue areas show fewer changes. 
-                             Explore the map to understand climate impacts on {selectedCity}.<br /><br />
-                             <strong>Data Sources:</strong> Climate projections from Probable Futures using IPCC scenarios, 
-                             with geospatial data powered by Mapbox. The map displays projected changes in extreme heat frequency 
-                             based on scientific climate models and historical weather patterns.
-                           </p>
+                                                <p style={{ 
+                       fontSize: '0.85rem', 
+                       color: 'rgba(255,255,255,0.9)', 
+                       marginBottom: '2rem',
+                       textAlign: 'center',
+                       fontStyle: 'italic',
+                       lineHeight: '1.6',
+                       maxWidth: '800px',
+                       margin: '0 auto 2rem auto'
+                     }}>
+                       This interactive map shows projected days above 32°C (90°F) under a 1.5°C warming scenario. 
+                       Red areas indicate more extreme heat days, while blue areas show fewer changes. 
+                       Explore the map to understand climate impacts on {selectedCity}.
+                     </p>
                            
                            <div style={{
                              height: '600px',
@@ -1081,7 +1386,7 @@ export default function Home() {
                                🌍
                              </div>
                              <h4 style={{ 
-                               fontSize: '1.8rem', 
+                               fontSize: '1rem', 
                                fontWeight: 700, 
                                margin: 0,
                                color: 'rgba(255, 215, 0, 0.9)',
@@ -1095,7 +1400,7 @@ export default function Home() {
                            </div>
                            
                            <p style={{ 
-                             fontSize: '1.1rem', 
+                             fontSize: '0.85rem', 
                              color: 'rgba(255,255,255,0.9)', 
                              marginBottom: '2rem',
                              textAlign: 'center',
@@ -1104,12 +1409,9 @@ export default function Home() {
                              maxWidth: '800px',
                              margin: '0 auto 2rem auto'
                            }}>
-                             This interactive climate zones map shows how global warming will transform Earth's climate patterns under a 3°C warming scenario. 
+                             Interactive climate zones map based on Probable Futures showing how global warming will transform Earth's climate patterns under a 3°C warming scenario. 
                              Different colors represent distinct climate zones that will shift as temperatures rise. 
-                             Explore how climate zones around {selectedCity} and globally will change.<br /><br />
-                             <strong>Data Sources:</strong> Climate projections from Probable Futures using IPCC scenarios and CORDEX-CORE regional climate models, 
-                             with geospatial data powered by Mapbox. The map displays projected climate zone shifts 
-                             based on scientific climate models and the Köppen-Geiger climate classification system.
+                             Explore how climate zones around {selectedCity} and globally will change.
                            </p>
                            
                            <div style={{
@@ -1142,7 +1444,9 @@ export default function Home() {
               padding: '2rem',
               overflow: 'auto',
               borderLeft: '1px solid rgba(255, 215, 0, 0.2)',
-              background: 'rgba(20, 33, 61, 0.3)'
+              background: 'rgba(20, 33, 61, 0.3)',
+              position: 'relative',
+              zIndex: 1
             }}>
               {/* Section d'analyse climatique */}
               <div style={{
@@ -1317,6 +1621,41 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Styles CSS pour les animations et scrollbars */}
+      <style jsx>{`
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+        
+        /* Scrollbar personnalisée pour tous les éléments */
+        ::-webkit-scrollbar {
+          width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+          background: rgba(255, 215, 0, 0.1);
+          border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+          background: linear-gradient(135deg, rgba(255, 215, 0, 0.8), rgba(255, 193, 7, 0.6));
+          border-radius: 4px;
+          border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 193, 7, 0.8));
+        }
+        
+        /* Pour Firefox */
+        * {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(255, 215, 0, 0.8) rgba(255, 215, 0, 0.1);
+        }
+      `}</style>
     </div>
   );
 }

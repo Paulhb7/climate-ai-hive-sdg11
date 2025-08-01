@@ -59,6 +59,83 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
     return () => clearTimeout(timer);
   }, []);
 
+  // Effet pour dessiner les alvéoles hexagonales dans l'animation de connexion
+  useEffect(() => {
+    if (showAnimation) {
+      const canvas = document.getElementById('connectionHoneycombCanvas') as HTMLCanvasElement;
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const resizeCanvas = () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      };
+
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      // Dessiner un hexagone
+      const drawHexagon = (x: number, y: number, size: number, opacity: number) => {
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+          const angle = (i * Math.PI) / 3;
+          const px = x + size * Math.cos(angle);
+          const py = y + size * Math.sin(angle);
+          if (i === 0) {
+            ctx.moveTo(px, py);
+          } else {
+            ctx.lineTo(px, py);
+          }
+        }
+        ctx.closePath();
+        ctx.fillStyle = `rgba(144, 202, 249, ${opacity})`;
+        ctx.fill();
+      };
+
+      // Initialiser la grille hexagonale
+      const hexSize = 35;
+      const rows = Math.ceil(canvas.height / (hexSize * 1.5)) + 2;
+      const cols = Math.ceil(canvas.width / (hexSize * Math.sqrt(3))) + 2;
+
+      const hexagons: Array<{x: number, y: number, opacity: number, pulse: number}> = [];
+      
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          const x = col * hexSize * Math.sqrt(3) + (row % 2) * (hexSize * Math.sqrt(3)) / 2;
+          const y = row * hexSize * 1.5;
+          
+          hexagons.push({
+            x,
+            y,
+            opacity: Math.random() * 0.15 + 0.08,
+            pulse: Math.random() * Math.PI * 2
+          });
+        }
+      }
+
+      // Animation des hexagones
+      const animate = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        hexagons.forEach(hex => {
+          hex.pulse += 0.015;
+          hex.opacity = 0.08 + 0.12 * Math.sin(hex.pulse);
+          drawHexagon(hex.x, hex.y, hexSize, hex.opacity);
+        });
+
+        requestAnimationFrame(animate);
+      };
+
+      animate();
+
+      return () => {
+        window.removeEventListener('resize', resizeCanvas);
+      };
+    }
+  }, [showAnimation]);
+
   const startConnectionSequence = async () => {
     for (let i = 0; i < steps.length; i++) {
       // Marquer l'étape comme en cours de connexion
@@ -264,10 +341,25 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'rgba(20, 33, 61, 0.95)',
+      background: 'linear-gradient(135deg, hsl(220, 70%, 15%), hsl(230, 60%, 20%), hsl(240, 50%, 25%))',
       backdropFilter: 'blur(20px)',
-      WebkitBackdropFilter: 'blur(20px)'
+      WebkitBackdropFilter: 'blur(20px)',
+      position: 'relative'
     }}>
+      {/* Canvas pour les alvéoles hexagonales */}
+      <canvas
+        id="connectionHoneycombCanvas"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none',
+          zIndex: 0,
+          opacity: 0.5
+        }}
+      />
       {/* Canvas pour les animations de particules */}
       <canvas
         ref={canvasRef}
@@ -286,7 +378,7 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
         textAlign: 'center',
         marginBottom: '3rem',
         position: 'relative',
-        zIndex: 1
+        zIndex: 2
       }}>
         <h1 style={{
           fontSize: '2.5rem',
@@ -315,7 +407,7 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
         gap: '2rem',
         marginBottom: '3rem',
         position: 'relative',
-        zIndex: 1
+        zIndex: 2
       }}>
         {steps.map((step, index) => (
           <div
@@ -356,9 +448,23 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
               boxShadow: step.status === 'connected' 
                 ? `0 4px 16px ${step.color}40` 
                 : '0 2px 8px rgba(0,0,0,0.2)',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              overflow: 'hidden'
             }}>
-              {step.icon}
+              {step.id === 'onu' ? (
+                <img 
+                  src="/onu-flag.png" 
+                  alt="UN Flag" 
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    borderRadius: '50%'
+                  }}
+                />
+              ) : (
+                step.icon
+              )}
             </div>
 
             {/* Contenu */}
@@ -433,7 +539,7 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
          <div style={{
            width: '400px',
            position: 'relative',
-           zIndex: 1
+           zIndex: 2
          }}>
            <div style={{
              width: '100%',
@@ -462,13 +568,13 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
              {Math.round(progress)}% Complete
            </p>
          </div>
-       ) : (
-         <div style={{
-           textAlign: 'center',
-           position: 'relative',
-           zIndex: 1,
-           animation: 'fadeInUp 0.8s ease-out'
-         }}>
+                ) : (
+           <div style={{
+             textAlign: 'center',
+             position: 'relative',
+             zIndex: 2,
+             animation: 'fadeInUp 0.8s ease-out'
+           }}>
            <div style={{
              width: '80px',
              height: '80px',
