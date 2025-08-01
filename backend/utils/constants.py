@@ -223,3 +223,34 @@ Target 11.b: By 2020, substantially increase the number of cities and human sett
 Target 11.c: Support least developed countries, including through financial and technical assistance, in building sustainable and resilient buildings utilizing local materials.
     - Indicator 11.c.1: Proportion of financial support to the least developed countries that is allocated to the construction and retrofitting of sustainable, resilient and resource-efficient buildings utilizing local materials.
 """ 
+
+CLIMATE_MODELS = {
+  "CMCC_CM2_VHR4": {
+    "skill": { "heat": "high", "cold": "medium", "dry": "medium", "flood": "high", "grow": "medium" },
+    "best_regions": ["Mediterranean", "East Asia", "Mid-latitude oceans"]
+  },
+  "FGOALS_f3_H": {
+    "skill": { "heat": "medium", "cold": "medium", "dry": "low", "flood": "high", "grow": "medium" },
+    "best_regions": ["East & South-East Asia", "West Pacific"]
+  },
+  "HiRAM_SIT_HR": {
+    "skill": { "heat": "high", "cold": "low", "dry": "medium", "flood": "medium", "grow": "medium" },
+    "best_regions": ["Tropics", "W. N. Pacific", "Caribbean/Atlantic hurricanes"]
+  },
+  "MRI_AGCM3_2_S": {
+    "skill": { "heat": "high", "cold": "high", "dry": "medium", "flood": "high", "grow": "medium" },
+    "best_regions": ["East Asia", "Global land extremes"]
+  },
+  "EC_Earth3P_HR": {
+    "skill": { "heat": "medium", "cold": "medium", "dry": "medium", "flood": "low", "grow": "medium" },
+    "best_regions": ["Europe", "North Atlantic"]
+  },
+  "MPI_ESM1_2_XR": {
+    "skill": { "heat": "medium", "cold": "medium", "dry": "medium", "flood": "low", "grow": "medium" },
+    "best_regions": ["North Atlantic", "Global biogeochemistry"]
+  },
+  "NICAM16_8S": {
+    "skill": { "heat": "high", "cold": "medium", "dry": "medium", "flood": "high", "grow": "medium" },
+    "best_regions": ["Tropics", "Arctic", "Monsoon domains"]
+  }
+}
