@@ -13,12 +13,16 @@ from utils.constants import COUNTRY_CODES, LOCATION_CODES, SDG11_TARGETS_INDICAT
 # Charger les variables d'environnement depuis le fichier .env
 load_dotenv()
 
-GROQ_API_KEY = "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"
+url = os.getenv("WATSONX_API_URL")
+api_key = os.getenv("WATSONX_API_KEY")
+project_id = ("WATSONX_PROJECT_ID")
 
-os.environ["GROQ_API_KEY"] = "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"
+os.environ["WATSONX_PROJECT_ID"] =project_id
+os.environ["WATSONX_API_KEY"] = api_key
+os.environ["WATSONX_API_URL"] = url
 
-llama_model = ChatModel.from_name("groq:qwen/qwen3-32b")
-granite = ChatModel.from_name("groq:qwen/qwen3-32b")
+llama_model = ChatModel.from_name("watsonx:meta-llama/llama-3-3-70b-instruct")
+granite = ChatModel.from_name("watsonx:ibm/granite-3-8b-instruct")
 
 async def run_climate_agents(city: str, provider: str = None) -> str:
 
@@ -86,7 +90,6 @@ async def run_climate_agents(city: str, provider: str = None) -> str:
     return response.result.final_answer
 
 async def run_recommendation_agent(city: str) -> str:
-    llm = ChatModel.from_name("groq:qwen/qwen3-32b")
     workflow = AgentWorkflow(name="Recommendation assistant")
 
     workflow.add_agent(
@@ -105,7 +108,7 @@ async def run_recommendation_agent(city: str) -> str:
             {LOCATION_CODES}
             """),
             tools=[UNSDGTool()],
-        llm=llama_model,  # corrected: use the local 'llm' object, not 'llama_model'
+        llm=llama_model,  
     )
 
     response = await workflow.run(
@@ -147,7 +150,7 @@ async def run_sdg11_validation_agent(city: str, user_question: str) -> str:
             "4. Suggestions for improvement or additional considerations\n"
             "5. A clear YES/NO assessment with explanation"
         ),
-        llm=llm,
+        llm=granite_model,
     )
 
     response = await workflow.run(
