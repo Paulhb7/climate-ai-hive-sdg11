@@ -54,7 +54,6 @@ Three specialized AI agents collaborate to produce an integrated climate resilie
 - Python 3.8+  
 - Node.js 18+ (for frontend)  
 - IBM WatsonX account (optional, but recommended)  
-- Groq account (optional)  
 
 ### Backend  
 
