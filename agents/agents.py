@@ -21,9 +21,7 @@ os.environ["WATSONX_API_KEY"] = api_key
 os.environ["WATSONX_API_URL"] = url
 
 # Models - You can change the model here
-llama_model = ChatModel.from_name("watsonx:meta-llama/llama-4-maverick-17b-128e-instruct-fp8")
-granite_model = ChatModel.from_name("watsonx:ibm/granite-3-8b-instruct")
-model_name = llama_model
+model_name = ChatModel.from_name("watsonx:ibm/granite-3-3-8b-instruct")
 
 async def run_climate_agents(city: str, provider: str = None) -> str:
 
@@ -70,7 +68,7 @@ async def run_climate_agents(city: str, provider: str = None) -> str:
 
             Terminate with the table—no summary, no concluding sentence.""",
             tools=[ClimateChangeTool()],
-        llm=llama_model
+        llm=model_name
     )
 
     response = await workflow.run(
@@ -189,7 +187,7 @@ Do NOT use any Markdown tables anywhere in the output.
 - Only output the final Markdown (no extra commentary).
         """,
         tools=[UNSDGTool()],
-        llm=llama_model,
+        llm=model_name,
     )
 
     response = await workflow.run(
@@ -238,7 +236,7 @@ async def run_sdg11_validation_agent(city: str, user_question: str) -> str:
             "4. Suggestions for improvement or additional considerations\n"
             "5. A clear YES/NO assessment with explanation"
         ),
-        llm=llama_model,
+        llm=model_name,
     )
 
     response = await workflow.run(
