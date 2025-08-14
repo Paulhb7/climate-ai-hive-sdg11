@@ -130,7 +130,7 @@ We are a multidisciplinary team combining expertise in **AI agent architecture**
 - **Paul** – co-founder of Inclusive Brains and AI Agent Architect at Wavestone, working with IBM France on Quantum Machine Learning for neuroscience data, 
 - **Tristan** – Agent Engineer & Data Scientist at Wavestone, designing and building Hive.ai’s specialized agent tools.  
 - **Louise** – AI Engineer & Data Scientist at Wavestone, leading data processing and analysis while crafting intuitive, actionable user experiences.  
-- **Mentor: Olivier Oullier** – Neuroscientist & co-founder of Inclusive Brains, guiding UX/UI design and strategy, leveraging experience at WEF and ITU AI for Good.  
+- **Mentor: Olivier Oullier** – Neuroscientist & co-founder of Inclusive Brains, guiding UX/UI design and AI strategy.  
 
 ---
 
