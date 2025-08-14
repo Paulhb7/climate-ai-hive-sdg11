@@ -3,7 +3,9 @@
 **Climate AI Hive** is an **AI-powered urban climate resilience platform** built on **IBM WatsonX** and **IBM Cloud**, using **IBM’s 🐝 Bee AI agentic framework**.  
 It combines **UN Sustainable Development Goal 11 (Sustainable Cities & Communities)** data, **IPCC climate science**, and specialized BeeAI agents, powered by **IBM Granite 3.3**.
 
-In just minutes, it turns climate change and UN data into **city-specific action plans** with projections, recommendations, and SDG 11 compliance metrics — empowering cities to adapt faster and smarter.  
+In just minutes, it turns climate change and UN data into **city-specific action plans** with projections, recommendations, and SDG 11 compliance metrics — empowering cities to adapt faster and smarter.
+
+A project made for IBM TechXchange 2025 Pre-conference watsonx Hackathon
 
 ---
 
