@@ -24,50 +24,53 @@ os.environ["WATSONX_API_URL"] = url
 model_name = ChatModel.from_name("watsonx:ibm/granite-3-3-8b-instruct")
 
 async def run_climate_agents(city: str, provider: str = None) -> str:
-
-    workflow = AgentWorkflow(name="Climate change analysis")
+    workflow = AgentWorkflow(name="Climate change analysis with SDG11 recommendations")
 
     workflow.add_agent(
         name="ClimateAnalyst",
-        role="An expert in climate change impact analysis.",
-            instructions=f"""
-            You are ClimateImpactAnalyst, an AI climatologist 
-            charged with distilling multi-model projections into clear, location-specific insights. 
-            Leverage the ClimateChangeTool to aggregate metrics from 1950, 2025, 2050, 
-            weigh each model’s strengths and weaknesses, and return a concise comparative table for decision-makers.
+        role="Expert in climate change impact analysis and SDG11-aligned urban planning",
+        instructions=f"""
+You are ClimateImpactAnalyst, an AI climatologist tasked with:
+1) Producing a detailed climate change impact assessment for {city}.
+2) Translating those findings into concrete, quantified recommendations aligned with UN Sustainable Development Goal 11.
 
-            Retrieve data
-            Call ClimateChangeTool to get the indicators for each year for {city}
+# STEP 1 – CLIMATE DATA
+- You MUST call ClimateChangeTool BEFORE drafting any text.
+- Retrieve all available indicators for {city} for the years 1950, 2025, and 2050.
+- You MUST use only the retrieved numerical values. Do NOT invent numbers.
 
-            Model–metric evaluation
+# STEP 2 – REPORT STRUCTURE
+Produce ONLY a long-form Markdown report (~1500–2000 words) with:
 
-            For EACH AND ALL metric–year pair (7 metrics per year):
-            ─ Match model strengths / weaknesses to (a) the metric’s physical basis,
-            (b) the geographic features of LOCATION (coast, elevation, latitude, etc.).
-            ─ Score suitability on accuracy, temporal resolution, regional bias, and peer-review pedigree.
-            ─ If several models tie, either
-            • choose the single most appropriate by qualitative edge or
-            • create a weighted ensemble (explain the weights in ≤ 15 words).
-            Output one value per metric-year pair
+1) Climate Change Impact Assessment
+   - Follow detailed instructions for each metric (value, uncertainty, rationale, ensemble notes, confidence).
+   - Include per-metric analysis for 1950, 2025, and 2050, as per ClimateChangeTool output.
 
-            Model Datas : {CLIMATE_MODELS}
+2) SDG11-Aligned Recommendations
+   - Based on the climate risks identified in part 1, propose 5–8 flagship adaptation/mitigation actions relevant to SDG11.
+   - Each action MUST include:
+     * Rationale: explicitly link to one or more climate metrics from part 1.
+     * Target: quantified value + year + unit.
+     * KPIs: up to three concise KPI phrases.
+     * Owner: responsible local entity or agency.
+     * Budget estimate: amount and formula (use standard urban cost heuristics: e.g., bike lane 0.6–2.0M EUR/km, urban greening 50–200 EUR/m2).
+     * SDG11 linkage: specify which SDG11 targets are addressed and why.
 
-            Uncertainty & bias handling
-            ─ Apply bias-correction only if explicitly justified by documented weaknesses.
-            ─ Propagate uncertainty; report min–max range when available.
+3) Assumptions and Data
+   - List each climate metric retrieved from ClimateChangeTool, with years and units.
+   - Note any gaps, proxies, or assumptions made to define recommendations.
 
-            Output – return a comprehensive analysis of the climate change impact on the location in a
-            well-formatted markdown format.
+# FORMATTING & UNITS
+- ASCII-safe; no tables.
+- degC, mm, days, m2, km2 for units.
+- Dot as decimal separator; normal spaces only.
+- No non-breaking spaces or hidden control characters.
 
-            Formatting rules:
-            • Numeric values → 2-decimal precision.
-            • Maintain original metric units.
-            • Keep “Rationale” succinct yet specific (name the decisive strength/weakness).
-            • If an ensemble is used, write “Ensemble(n)” where n = number of contributing models.
-            
-
-            Terminate with the table—no summary, no concluding sentence.""",
-            tools=[ClimateChangeTool()],
+# QUALITY CONTROL
+- Climate section: all metrics have value, uncertainty range, rationale, and confidence.
+- Recommendations section: all actions quantified, budgeted, and linked to climate risks identified in part 1.
+        """,
+        tools=[ClimateChangeTool()],
         llm=model_name
     )
 
@@ -75,18 +78,24 @@ async def run_climate_agents(city: str, provider: str = None) -> str:
         inputs=[
             AgentWorkflowInput(
                 prompt=(
-                    f"What is the climate change impact on {city} ? "
-                    
+                    f"Produce a combined climate change impact assessment and SDG11-aligned recommendations for {city}. "
+                    f"You MUST call ClimateChangeTool first, use its numerical outputs for 1950, 2025, and 2050, "
+                    f"and base all recommendations on the risks identified in the climate section. "
+                    f"The recommendations must be quantified, budgeted, and explicitly linked to relevant SDG11 targets."
                 ),
                 expected_output=(
-                    f"""return a comprehensive analysis of the climate change impact on the location in a
-                        well-formatted markdown format.
-                    """
-                )
+                    f"A Markdown, ASCII-safe, long-form report for {city} (~1500–2000 words) containing: "
+                    f"(1) a detailed climate change impact assessment following the given structure and per-metric requirements, "
+                    f"(2) 5–8 concrete adaptation/mitigation actions aligned with SDG11, each with rationale, target, KPIs, owner, budget formula, "
+                    f"and SDG11 target linkage, and "
+                    f"(3) an 'Assumptions and Data' section listing retrieved metrics from ClimateChangeTool and any assumptions made. "
+                    f"No tables, no non-ASCII characters."
+                ),
             ),
         ]
     )
     return response.result.final_answer
+
 
 async def run_recommendation_agent(city: str) -> str:
     workflow = AgentWorkflow(name="Recommendation assistant")
