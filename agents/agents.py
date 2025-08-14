@@ -15,9 +15,9 @@ load_dotenv()
 
 url = os.getenv("WATSONX_API_URL")
 api_key = os.getenv("WATSONX_API_KEY")
-project_id = ("WATSONX_PROJECT_ID")
+project_id = os.getenv("WATSONX_PROJECT") or os.getenv("WATSONX_PROJECT_ID")
 
-os.environ["WATSONX_PROJECT_ID"] =project_id
+os.environ["WATSONX_PROJECT_ID"] = project_id
 os.environ["WATSONX_API_KEY"] = api_key
 os.environ["WATSONX_API_URL"] = url
 
