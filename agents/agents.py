@@ -2,7 +2,6 @@ import os
 import asyncio
 from dotenv import load_dotenv
 from beeai_framework.backend.chat import ChatModel
-from beeai_framework.adapters.groq import GroqChatModel
 from beeai_framework.tools.search.wikipedia import WikipediaTool
 from beeai_framework.tools.weather.openmeteo import OpenMeteoTool
 from beeai_framework.workflows.agent import AgentWorkflow, AgentWorkflowInput
@@ -132,7 +131,7 @@ async def run_sdg11_validation_agent(city: str, user_question: str) -> str:
     """
     Agent qui analyse si une proposition ou question utilisateur rentre dans les critères SDG11
     """
-    llm = ChatModel.from_name("groq:qwen/qwen3-32b")
+
     workflow = AgentWorkflow(name="SDG11 Validation Expert")
 
     workflow.add_agent(
@@ -150,7 +149,7 @@ async def run_sdg11_validation_agent(city: str, user_question: str) -> str:
             "4. Suggestions for improvement or additional considerations\n"
             "5. A clear YES/NO assessment with explanation"
         ),
-        llm=granite_model,
+        llm=llama_model,
     )
 
     response = await workflow.run(
