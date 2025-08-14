@@ -990,7 +990,7 @@ export default function Home() {
                       color: 'rgba(255, 215, 0, 0.9)',
                       textShadow: '0 1px 2px rgba(0,0,0,0.3)'
                     }}>
-                      Honeycomb Analysis
+                      UN Sustainable Development Goal 11 Analysis Summary
                     </h3>
                   </div>
                   
@@ -1089,7 +1089,7 @@ export default function Home() {
                       type="text"
                       value={additionalQuestion}
                       onChange={(e) => setAdditionalQuestion(e.target.value)}
-                      placeholder="Ex: Does installing solar panels meet the criteria?"
+                      placeholder="Ex: Would building a network of elevated pedestrian walkways in the city center meet the SDG 11 criteria for sustainable cities?"
                       style={{
                         flex: 1,
                         padding: '1rem',
