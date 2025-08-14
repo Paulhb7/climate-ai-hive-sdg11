@@ -1,6 +1,7 @@
 # Hive.ai – AI Platform for Sustainable Urban Development  
 
-Hive.ai is an **AI-powered urban climate resilience platform built on IBM WatsonX and IBM Cloud**, combining **UN Sustainable Development Goal (SDG) data**, **IPCC climate science**, and **specialized BeeAI agents**.  
+Hive.ai is an **AI-powered urban climate resilience platform built on IBM WatsonX and IBM Cloud** and **IBM's 🐝 Bee AI agentic framework**, combining **UN Sustainable Development Goal (SDG) data**, **IPCC climate science**, and **specialized BeeAI agents**, backed by **IBM Granite 3.3**.
+
 In just minutes, it turns climate change and UN data into **city-specific action plans** with projections, recommendations, and SDG 11 compliance metrics — empowering cities to adapt faster and smarter.  
 
 ---
@@ -118,7 +119,7 @@ A resilience officer in Phoenix enters their city into Hive.ai. Within 5 minutes
 
 We are a multidisciplinary team combining expertise in **AI agent architecture**, **data science**, and **UX design**:  
 
-- **Paul** – AI Agent Architect at Wavestone, co-founder of Inclusive Brains, working with IBM France on Quantum Machine Learning for neuroscience data, 
+- **Paul** – co-founder of Inclusive Brains and AI Agent Architect at Wavestone, working with IBM France on Quantum Machine Learning for neuroscience data, 
 - **Tristan** – Agent Engineer & Data Scientist at Wavestone, designing and building Hive.ai’s specialized agent tools.  
 - **Louise** – AI Engineer & Data Scientist at Wavestone, leading data processing and analysis while crafting intuitive, actionable user experiences.  
 - **Mentor: Olivier Oullier** – Neuroscientist & co-founder of Inclusive Brains, guiding UX/UI design and strategy, leveraging experience at WEF and ITU AI for Good.  
