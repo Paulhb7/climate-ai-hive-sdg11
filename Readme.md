@@ -1,214 +1,131 @@
-# Hive.ai - Plateforme d'IA pour le Développement Durable
+# Hive.ai – AI Platform for Sustainable Urban Development  
 
-Hive.ai est une plateforme qui utilise l'intelligence artificielle pour analyser l'impact du changement climatique sur les villes et fournir des recommandations pour un développement urbain durable, aligné avec les Objectifs de Développement Durable (ODD) de l'ONU.
+Hive.ai is an **AI-powered urban climate resilience platform built on IBM WatsonX and IBM Cloud**, combining **UN Sustainable Development Goal (SDG) data**, **IPCC climate science**, and **specialized BeeAI agents**.  
+In just minutes, it turns climate change and UN data into **city-specific action plans** with projections, recommendations, and SDG 11 compliance metrics — empowering cities to adapt faster and smarter.  
 
-## 🚀 Fonctionnalités
+---
 
-- **Analyse d'impact climatique** : Évaluation des conséquences du réchauffement climatique sur les villes
-- **Recommandations durables** : Conseils concrets pour rendre les villes plus résilientes
-- **Projets ONU** : Découverte d'initiatives des Nations Unies pertinentes
-- **Validation SDG11** : Analyse de l'alignement avec l'ODD 11 (Villes et communautés durables)
-- **Multi-providers** : Support pour Groq et WatsonX
+## 🌍 Problem Statement  
 
-## 🛠️ Installation
+Cities face an urgent need to **adapt to climate change** with limited resources.  
+Today:  
+- Climate data is fragmented and hard to use.  
+- Assessments (e.g., flood risk) take months to complete.  
+- Projections (e.g., heatwaves) are disconnected from urban planning.  
+- Thousands of proven climate solutions exist but remain invisible to most cities.  
+- International funding opportunities are missed due to lack of proper SDG alignment documentation.  
 
-### Prérequis
+**The result**: cities react to disasters instead of preventing them. Resources are misallocated, proven solutions stay undiscovered, and funding is lost.  
 
-- Python 3.8+
-- Node.js 18+ (pour le frontend)
-- Compte Groq (optionnel)
-- Compte WatsonX (optionnel)
+---
 
-### Backend
+## 💡 Solution  
 
-1. Naviguez vers le dossier backend :
+**Hive.ai – UN & IPCC Expertise in Your Pocket with BeeAI Agents on IBM WatsonX** 🐝  
+
+Three specialized AI agents collaborate to produce an integrated climate resilience report:  
+- **BeeAI ClimateAnalyst** – Analyzes historical and projected climate data (temperature, precipitation, air quality, flood risk), factoring in model uncertainties and biases.  
+- **BeeAI UrbanAdvisor** – Retrieves official UN SDG data via the SDG API, maps infrastructure vulnerabilities and demographics, and generates locally tailored recommendations in mobility, green spaces, energy, waste, and citizen engagement.  
+- **BeeAI SDG11Validator** – Evaluates proposals against UN SDG 11 targets, assigns alignment scores, and suggests improvements to maximize compliance and funding eligibility.  
+
+**Hive.ai delivers**:  
+- Hyperlocal climate impact projections  
+- Prioritized action lists with budgets and timelines  
+- Global case studies adapted to local contexts  
+- SDG 11 compliance metrics and funding guidance  
+
+---
+
+## 🚀 Key Features  
+
+- **Climate Impact Analysis** – Projections, trends, and vulnerability maps  
+- **Sustainable Recommendations** – Context-specific, actionable strategies  
+- **UN Project Discovery** – Relevant initiatives and funding sources  
+- **SDG 11 Validation** – Measured and improvable alignment scores  
+- **Multi-provider AI** – IBM WatsonX and Groq support  
+
+---
+
+## 🛠️ Installation  
+
+### Prerequisites  
+
+- Python 3.8+  
+- Node.js 18+ (for frontend)  
+- IBM WatsonX account (optional, but recommended)  
+- Groq account (optional)  
+
+### Backend  
+
 ```bash
 cd backend
-```
-
-2. Installez les dépendances Python :
-```bash
 pip install -r requirements.txt
-```
-
-3. Configurez les variables d'environnement en créant un fichier `.env` à la racine du projet :
-```bash
-# Copiez le fichier d'exemple
-cp env.example .env
-
-# Puis éditez le fichier .env avec vos vraies valeurs
-```
-
-4. Lancez le serveur backend :
-```bash
+cp env.example .env  # Copy and edit with your values
 uvicorn api:app --reload
 ```
 
-### Frontend
+### Frontend  
 
-1. Naviguez vers le dossier frontend :
 ```bash
 cd the-hive
-```
-
-2. Installez les dépendances Node.js :
-```bash
 npm install
-```
-
-3. Lancez le serveur de développement :
-```bash
 npm run dev
 ```
 
-## 🤖 Utilisation des Providers d'IA
+---
 
-### Configuration des modèles
+## 🤖 AI Provider Usage  
 
-Vous pouvez configurer les modèles par défaut dans votre fichier `.env` :
+You can configure the default provider and models in your `.env` file:  
 
 ```bash
-# Provider par défaut
-DEFAULT_PROVIDER=groq  # ou watsonx
-
-# Modèles par défaut pour chaque provider
-DEFAULT_GROQ_MODEL=qwen/qwen3-32b
+DEFAULT_PROVIDER=watsonx  # or groq
 DEFAULT_WATSONX_MODEL=llama-3-3-70b-instruct
-
-# Modèle spécifique pour l'agent des projets UN (optionnel)
+DEFAULT_GROQ_MODEL=qwen/qwen3-32b
 UN_PROJECTS_MODEL=llama-3.1-8b-instant
 ```
 
-### Groq
+---
 
-Groq est le provider par défaut. Il offre des performances rapides et une bonne qualité de réponse.
+## 📡 API Endpoints  
 
-**Configuration requise :**
-- `GROQ_API_KEY` dans le fichier `.env`
+### POST `/climate-impact`  
+Analyze climate change impact on a city.  
 
-**Utilisation :**
-```python
-from agents import run_climate_agents
+### POST `/recommendations`  
+Get sustainability recommendations for a city.  
 
-# Utilisation par défaut (selon DEFAULT_PROVIDER)
-result = await run_climate_agents("Paris")
+### POST `/un-projects`  
+List relevant UN projects for a city.  
 
-# Spécification explicite
-result = await run_climate_agents("Paris", provider="groq")
-```
+### POST `/sdg11-validation`  
+Validate a proposal’s alignment with SDG 11. 
 
-### WatsonX
+---
 
-WatsonX d'IBM offre des modèles spécialisés et des capacités avancées d'IA.
+## 🌟 Specific Use Case  
 
-**Configuration requise :**
-- `WATSONX_PROJECT_ID` dans le fichier `.env`
-- `WATSONX_API_KEY` dans le fichier `.env`
-- `WATSONX_API_URL` (optionnel) dans le fichier `.env`
+A resilience officer in Phoenix enters their city into Hive.ai. Within 5 minutes, they receive:  
+- Heat island vulnerability maps with demographic overlays  
+- Prioritized interventions (urban forests, cooling centers, reflective surfaces)  
+- Medellín green corridor success case study  
+- Budget estimates and financing options  
+- SDG 11 alignment scores  
+- Implementation timeline with measurable indicators  
 
-**Utilisation :**
-```python
-from agents import run_climate_agents
+---
 
-# Utilisation avec WatsonX
-result = await run_climate_agents("Paris", provider="watsonx")
-```
+## 🧠 Team  
 
-### API REST
+We are a multidisciplinary team combining expertise in **AI agent architecture**, **data science**, and **UX design**:  
 
-L'API utilise automatiquement le provider configuré dans le fichier `.env` :
+- **Paul** – AI Agent Architect at Wavestone, co-founder of Inclusive Brains, working with IBM France on Quantum Machine Learning for neuroscience data, 
+- **Tristan** – Agent Engineer & Data Scientist at Wavestone, designing and building Hive.ai’s specialized agent tools.  
+- **Louise** – AI Engineer & Data Scientist at Wavestone, leading data processing and analysis while crafting intuitive, actionable user experiences.  
+- **Mentor: Olivier Oullier** – Neuroscientist & co-founder of Inclusive Brains, guiding UX/UI design and strategy, leveraging experience at WEF and ITU AI for Good.  
 
-```bash
-curl -X POST "http://localhost:8000/climate-impact" \
-  -H "Content-Type: application/json" \
-  -d '{"city": "Paris"}'
-```
+---
 
-## 📡 Endpoints API
+## 📝 License  
 
-### POST /climate-impact
-Analyse l'impact du changement climatique sur une ville.
-
-**Paramètres :**
-- `city` (requis) : Nom de la ville
-
-### POST /recommendations
-Fournit des recommandations pour rendre une ville plus durable.
-
-**Paramètres :**
-- `city` (requis) : Nom de la ville
-- `question` (optionnel) : Question spécifique pour validation SDG11
-
-### POST /un-projects
-Liste les projets ONU pertinents pour une ville.
-
-**Paramètres :**
-- `city` (requis) : Nom de la ville
-
-### POST /sdg11-validation
-Valide si une proposition est alignée avec l'ODD 11.
-
-**Paramètres :**
-- `city` (requis) : Nom de la ville
-- `question` (requis) : Proposition à valider
-
-## 🧪 Tests
-
-Pour tester les agents, vous pouvez utiliser directement les fonctions Python ou les endpoints API.
-
-## 🔧 Configuration Avancée
-
-### Modèles disponibles
-
-**Groq :**
-- `qwen/qwen3-32b` (par défaut)
-- `llama-3.1-8b-instant`
-- Autres modèles Groq disponibles
-
-**WatsonX :**
-- `llama-3-3-70b-instruct` (par défaut)
-- `ibm/granite-3-8b-instruct`
-- `meta-llama/llama-3-2-11b-vision-instruct` (pour les images)
-- Autres modèles WatsonX disponibles
-
-### Personnalisation des modèles
-
-Vous pouvez spécifier un modèle particulier :
-
-```python
-from agents import get_model
-
-# Modèle Groq spécifique
-model = get_model("groq", "llama-3.1-8b-instant")
-
-# Modèle WatsonX spécifique
-model = get_model("watsonx", "ibm/granite-3-3-8b-instruct")
-
-# Utilisation du modèle par défaut (selon DEFAULT_PROVIDER)
-model = get_model()
-```
-
-### Variables d'environnement disponibles
-
-| Variable | Description | Défaut |
-|----------|-------------|---------|
-| `DEFAULT_PROVIDER` | Provider par défaut (groq/watsonx) | groq |
-| `DEFAULT_GROQ_MODEL` | Modèle Groq par défaut | qwen/qwen3-32b |
-| `DEFAULT_WATSONX_MODEL` | Modèle WatsonX par défaut | llama-3-3-70b-instruct |
-| `UN_PROJECTS_MODEL` | Modèle spécifique pour les projets UN | (utilise le modèle par défaut) |
-
-## 🌍 Objectifs de Développement Durable (ODD)
-
-Le projet est aligné avec l'ODD 11 "Villes et communautés durables" et utilise les indicateurs officiels de l'ONU pour évaluer les propositions et recommandations.
-
-## 📝 Licence
-
-Ce projet est sous licence MIT.
-
-## 🤝 Contribution
-
-Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou à soumettre une pull request.
-
-## 📞 Support
-
-Pour toute question ou problème, veuillez ouvrir une issue sur GitHub.
+MIT License. 
