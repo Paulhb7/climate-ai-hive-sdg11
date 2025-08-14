@@ -79,10 +79,9 @@ npm run dev
 You can configure the default provider and models in your `.env` file:  
 
 ```bash
-DEFAULT_PROVIDER=watsonx  # or groq
-DEFAULT_WATSONX_MODEL=llama-3-3-70b-instruct
-DEFAULT_GROQ_MODEL=qwen/qwen3-32b
-UN_PROJECTS_MODEL=llama-3.1-8b-instant
+WATSONX_API_URL=https://us-south.ml.cloud.ibm.com
+WATSONX_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx
+WATSONX_PROJECT_ID=your_project_id_here
 ```
 
 ---
