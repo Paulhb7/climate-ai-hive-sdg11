@@ -9,7 +9,6 @@ from tools.onu_tools import UNSDGTool, UNSDGToolInput
 from tools.climate_tool import ClimateChangeTool
 from utils.constants import COUNTRY_CODES, LOCATION_CODES, SDG11_TARGETS_INDICATORS, CLIMATE_MODELS
 
-# Charger les variables d'environnement depuis le fichier .env
 load_dotenv()
 
 url = os.getenv("WATSONX_API_URL")
