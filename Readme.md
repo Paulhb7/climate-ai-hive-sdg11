@@ -48,6 +48,12 @@ Three specialized AI agents collaborate to produce an integrated climate resilie
 - **SDG 11 Validation** – Measured and improvable alignment scores  
 - **Multi-provider AI** – IBM WatsonX and Groq support  
 
+## 🎥 Climate AI Hive Demo
+
+Watch a quick demonstration showing how Hive.ai generates local climate action plans in minutes — including projections, tailored recommendations, and SDG 11 alignment metrics:
+
+[![Watch the Hive.ai demo](https://img.youtube.com/vi/rgS0BWS4bNc/0.jpg)](https://www.youtube.com/watch?v=rgS0BWS4bNc)
+
 ---
 
 ## 🛠️ Installation  
