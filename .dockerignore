@@ -1,0 +1,15 @@
+@"
+.env
+.env.*
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.git
+.gitignore
+*.md
+.vscode
+.idea
+"@ | Out-File -FilePath .dockerignore -Encoding utf8

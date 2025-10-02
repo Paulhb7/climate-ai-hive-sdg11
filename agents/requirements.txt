@@ -1,0 +1,4 @@
+beeai-framework[watsonx,wikipedia,acp]
+fastapi
+uvicorn
+python-dotenv
