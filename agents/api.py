@@ -5,10 +5,11 @@ from agents import run_climate_agents, run_recommendation_agent, run_sdg11_valid
 
 app = FastAPI()
 
-# Autoriser le front Next.js à accéder à l’API (CORS)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # À restreindre en production
+    allow_origins=[
+        "*"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

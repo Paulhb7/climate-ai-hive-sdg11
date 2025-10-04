@@ -1,35 +1,49 @@
 import os
+from dotenv import load_dotenv
 
-# SET LITELLM-SPECIFIC ENVIRONMENT VARIABLES FIRST
+# Load .env first so os.getenv() works
+load_dotenv(override=True)
+
+# Now set the environment variables
 os.environ["WATSONX_URL"] = os.getenv("WATSONX_API_URL", "https://eu-de.ml.cloud.ibm.com")
 os.environ["WATSONX_APIKEY"] = os.getenv("WATSONX_API_KEY", "")
 os.environ["WATSONX_PROJECT_ID"] = os.getenv("WATSONX_PROJECT_ID", "")
-# Also set the generic ones
+
+# Also set the generic ones (beeai expects these)
 os.environ["WATSONX_API_URL"] = os.environ["WATSONX_URL"]
 os.environ["WATSONX_API_KEY"] = os.environ["WATSONX_APIKEY"]
 
-import asyncio
-from dotenv import load_dotenv
+# Debug: print to check values
+print("Watsonx URL:", os.environ["WATSONX_API_URL"])
+print("Watsonx Project ID:", os.environ["WATSONX_PROJECT_ID"])
+print("Watsonx API Key:", "set" if os.environ["WATSONX_API_KEY"] else "missing")
+
+# Now import the framework stuff
 from beeai_framework.backend.chat import ChatModel
 from beeai_framework.tools.search.wikipedia import WikipediaTool
 from beeai_framework.tools.weather.openmeteo import OpenMeteoTool
 from beeai_framework.workflows.agent import AgentWorkflow, AgentWorkflowInput
+from beeai_framework.memory import TokenMemory
 from tools.onu_tools import UNSDGTool, UNSDGToolInput
 from tools.climate_tool import ClimateChangeTool
 from utils.constants import COUNTRY_CODES, LOCATION_CODES, SDG11_TARGETS_INDICATORS, CLIMATE_MODELS
+import logging
+import asyncio
 
-load_dotenv(override=False)
 
-url = os.environ["WATSONX_API_URL"]
-api_key = os.environ["WATSONX_API_KEY"]
-project_id = os.environ["WATSONX_PROJECT_ID"]
+logging.basicConfig(level=logging.DEBUG)
+
 
 # Models - You can change the model here
 model_name = ChatModel.from_name("watsonx:ibm/granite-3-3-8b-instruct")
+# model_name = ChatModel.from_name("watsonx:ibm/ibm/granite-4.0-h-small")
 
-async def run_climate_agents(city: str, provider: str = None) -> str:
+async def run_climate_agents(city: str) -> str:
+    print(f"Running climate agents for city: {city}")
+    
     workflow = AgentWorkflow(name="Climate change analysis with SDG11 recommendations")
-
+    logging.debug(f"Running recommendation agent with input: {city}")
+    
     workflow.add_agent(
         name="ClimateAnalyst",
         role="Expert in climate change impact analysis and SDG11-aligned urban planning",
@@ -75,9 +89,9 @@ Produce ONLY a long-form Markdown report (~1500–2000 words) with:
 - Recommendations section: all actions quantified, budgeted, and linked to climate risks identified in part 1.
         """,
         tools=[ClimateChangeTool()],
-        llm=model_name
+        llm=model_name, 
     )
-
+    
     response = await workflow.run(
         inputs=[
             AgentWorkflowInput(
@@ -98,10 +112,14 @@ Produce ONLY a long-form Markdown report (~1500–2000 words) with:
             ),
         ]
     )
+    logging.debug(f"Recommendation agent result: {response.result.final_answer}")
+    print(response.result.final_answer)
     return response.result.final_answer
 
 
 async def run_recommendation_agent(city: str) -> str:
+
+
     workflow = AgentWorkflow(name="Recommendation assistant")
 
     workflow.add_agent(
@@ -283,3 +301,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+    
