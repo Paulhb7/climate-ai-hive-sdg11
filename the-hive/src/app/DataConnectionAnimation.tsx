@@ -99,13 +99,13 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
       const rows = Math.ceil(canvas.height / (hexSize * 1.5)) + 2;
       const cols = Math.ceil(canvas.width / (hexSize * Math.sqrt(3))) + 2;
 
-      const hexagons: Array<{x: number, y: number, opacity: number, pulse: number}> = [];
-      
+      const hexagons: Array<{ x: number, y: number, opacity: number, pulse: number }> = [];
+
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
           const x = col * hexSize * Math.sqrt(3) + (row % 2) * (hexSize * Math.sqrt(3)) / 2;
           const y = row * hexSize * 1.5;
-          
+
           hexagons.push({
             x,
             y,
@@ -118,7 +118,7 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
       // Animation des hexagones
       const animate = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
+
         hexagons.forEach(hex => {
           hex.pulse += 0.015;
           hex.opacity = 0.08 + 0.12 * Math.sin(hex.pulse);
@@ -139,7 +139,7 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
   const startConnectionSequence = async () => {
     for (let i = 0; i < steps.length; i++) {
       // Marquer l'étape comme en cours de connexion
-      setSteps(prev => prev.map((step, index) => 
+      setSteps(prev => prev.map((step, index) =>
         index === i ? { ...step, status: 'connecting' } : step
       ));
       setCurrentStep(i);
@@ -148,7 +148,7 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
       await new Promise(resolve => setTimeout(resolve, steps[i].duration));
 
       // Marquer l'étape comme connectée
-      setSteps(prev => prev.map((step, index) => 
+      setSteps(prev => prev.map((step, index) =>
         index === i ? { ...step, status: 'connected' } : step
       ));
 
@@ -163,7 +163,7 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
 
     // Afficher le message de succès
     setShowSuccess(true);
-    
+
     // Attendre un peu avant de terminer pour montrer le succès
     setTimeout(() => {
       onComplete();
@@ -202,7 +202,7 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
     steps.forEach((step, stepIndex) => {
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2 - 100 + stepIndex * 120;
-      
+
       // Particules principales pour chaque source de données
       for (let i = 0; i < 12; i++) {
         particles.push({
@@ -248,18 +248,18 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
       particles.forEach((particle, index) => {
         const stepIndex = Math.floor(index / 18); // 12 + 6 particules par étape
         const step = steps[stepIndex];
-        
+
         if (step.status === 'connecting' || step.status === 'connected') {
           // Attirer les particules vers le centre de l'étape
           const dx = particle.targetX - particle.x;
           const dy = particle.targetY - particle.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          
+
           if (distance > 5) {
             particle.vx += dx * 0.015;
             particle.vy += dy * 0.015;
           }
-          
+
           // Limiter la vitesse
           const speed = Math.sqrt(particle.vx * particle.vx + particle.vy * particle.vy);
           if (speed > 4) {
@@ -279,7 +279,7 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
         // Dessiner la particule
         ctx.save();
         ctx.globalAlpha = particle.opacity;
-        
+
         if (step.status === 'connected') {
           // Effet de lueur pour les connexions établies
           const glow = ctx.createRadialGradient(
@@ -331,7 +331,7 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
 
   return (
     <div style={{
-      position: 'fixed',
+      //position: 'fixed',
       top: 0,
       left: 0,
       width: '100vw',
@@ -376,25 +376,27 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
       {/* Titre principal */}
       <div style={{
         textAlign: 'center',
-        marginBottom: '3rem',
+        marginBottom: '2rem',
         position: 'relative',
         zIndex: 2
       }}>
         <h1 style={{
-          fontSize: '2.5rem',
+          fontSize: 'clamp(1.5rem, 5vw, 2.2rem)',
           fontWeight: 700,
           color: '#fff',
           margin: 0,
-          marginBottom: '1rem',
-          textShadow: '0 4px 8px rgba(0,0,0,0.3)'
+          marginBottom: '0.5rem',
+          textShadow: '0 4px 8px rgba(0,0,0,0.3)',
+          lineHeight: 1.2
         }}>
           🐝 Bee Agents Connecting...
         </h1>
         <p style={{
-          fontSize: '1.2rem',
+          fontSize: 'clamp(0.9rem, 3vw, 1.1rem)',
           color: 'rgba(255, 255, 255, 0.8)',
           margin: 0,
-          fontStyle: 'italic'
+          fontStyle: 'italic',
+          lineHeight: 1.3
         }}>
           Establishing connections to climate data sources
         </p>
@@ -404,10 +406,12 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
       <div style={{
         display: 'flex',
         flexDirection: 'column',
-        gap: '2rem',
-        marginBottom: '3rem',
+        gap: '1rem',
+        marginBottom: '2rem',
         position: 'relative',
-        zIndex: 2
+        zIndex: 2,
+        maxWidth: '100%',
+        padding: '0 0.5rem'
       }}>
         {steps.map((step, index) => (
           <div
@@ -415,46 +419,47 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '1.5rem',
-              padding: '1.5rem 2rem',
-              background: step.status === 'connected' 
-                ? 'rgba(255, 255, 255, 0.1)' 
+              gap: '1rem',
+              padding: '1rem 1.5rem',
+              background: step.status === 'connected'
+                ? 'rgba(255, 255, 255, 0.1)'
                 : 'rgba(255, 255, 255, 0.05)',
-              borderRadius: '16px',
-              border: step.status === 'connected' 
-                ? `2px solid ${step.color}` 
+              borderRadius: '12px',
+              border: step.status === 'connected'
+                ? `2px solid ${step.color}`
                 : '1px solid rgba(255, 255, 255, 0.2)',
               backdropFilter: 'blur(10px)',
               WebkitBackdropFilter: 'blur(10px)',
               transition: 'all 0.3s ease',
-              transform: step.status === 'connected' ? 'scale(1.02)' : 'scale(1)',
-              boxShadow: step.status === 'connected' 
-                ? `0 8px 32px rgba(${parseInt(step.color.slice(1, 3), 16)}, ${parseInt(step.color.slice(3, 5), 16)}, ${parseInt(step.color.slice(5, 7), 16)}, 0.3)` 
-                : '0 4px 16px rgba(0,0,0,0.2)'
+              transform: step.status === 'connected' ? 'scale(1.01)' : 'scale(1)',
+              boxShadow: step.status === 'connected'
+                ? `0 4px 16px rgba(${parseInt(step.color.slice(1, 3), 16)}, ${parseInt(step.color.slice(3, 5), 16)}, ${parseInt(step.color.slice(5, 7), 16)}, 0.3)`
+                : '0 2px 8px rgba(0,0,0,0.2)'
             }}
           >
             {/* Icône */}
             <div style={{
-              width: '60px',
-              height: '60px',
+              width: '50px',
+              height: '50px',
+              minWidth: '50px',
               borderRadius: '50%',
-              background: step.status === 'connected' 
-                ? `linear-gradient(135deg, ${step.color}, rgba(255, 255, 255, 0.8))` 
+              background: step.status === 'connected'
+                ? `linear-gradient(135deg, ${step.color}, rgba(255, 255, 255, 0.8))`
                 : 'rgba(255, 255, 255, 0.1)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '2rem',
-              boxShadow: step.status === 'connected' 
-                ? `0 4px 16px ${step.color}40` 
-                : '0 2px 8px rgba(0,0,0,0.2)',
+              fontSize: '1.5rem',
+              boxShadow: step.status === 'connected'
+                ? `0 2px 8px ${step.color}40`
+                : '0 1px 4px rgba(0,0,0,0.2)',
               transition: 'all 0.3s ease',
               overflow: 'hidden'
             }}>
               {step.id === 'onu' ? (
-                <img 
-                  src="/onu-flag.png" 
-                  alt="UN Flag" 
+                <img
+                  src="/onu-flag.png"
+                  alt="UN Flag"
                   style={{
                     width: '100%',
                     height: '100%',
@@ -468,20 +473,22 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
             </div>
 
             {/* Contenu */}
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <h3 style={{
-                fontSize: '1.3rem',
+                fontSize: 'clamp(1rem, 3vw, 1.2rem)',
                 fontWeight: 600,
                 color: '#fff',
                 margin: 0,
-                marginBottom: '0.5rem'
+                marginBottom: '0.25rem',
+                lineHeight: 1.2
               }}>
                 {step.name}
               </h3>
               <p style={{
-                fontSize: '1rem',
+                fontSize: 'clamp(0.85rem, 2.5vw, 0.95rem)',
                 color: 'rgba(255, 255, 255, 0.7)',
-                margin: 0
+                margin: 0,
+                lineHeight: 1.3
               }}>
                 {step.description}
               </p>
@@ -491,39 +498,39 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.5rem'
+              minWidth: '20px'
             }}>
               {step.status === 'pending' && (
                 <div style={{
-                  width: '20px',
-                  height: '20px',
+                  width: '18px',
+                  height: '18px',
                   borderRadius: '50%',
                   background: 'rgba(255, 255, 255, 0.3)',
                   border: '2px solid rgba(255, 255, 255, 0.5)'
                 }} />
               )}
-              
+
               {step.status === 'connecting' && (
                 <div style={{
-                  width: '20px',
-                  height: '20px',
+                  width: '18px',
+                  height: '18px',
                   borderRadius: '50%',
                   border: '2px solid rgba(255, 255, 255, 0.3)',
                   borderTop: `2px solid ${step.color}`,
                   animation: 'spin 1s linear infinite'
                 }} />
               )}
-              
+
               {step.status === 'connected' && (
                 <div style={{
-                  width: '20px',
-                  height: '20px',
+                  width: '18px',
+                  height: '18px',
                   borderRadius: '50%',
                   background: step.color,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '0.8rem',
+                  fontSize: '0.7rem',
                   color: '#fff'
                 }}>
                   ✓
@@ -534,82 +541,88 @@ const DataConnectionAnimation: React.FC<{ onComplete: () => void }> = ({ onCompl
         ))}
       </div>
 
-             {/* Barre de progression ou message de succès */}
-       {!showSuccess ? (
-         <div style={{
-           width: '400px',
-           position: 'relative',
-           zIndex: 2
-         }}>
-           <div style={{
-             width: '100%',
-             height: '8px',
-             background: 'rgba(255, 255, 255, 0.1)',
-             borderRadius: '4px',
-             overflow: 'hidden',
-             backdropFilter: 'blur(10px)',
-             WebkitBackdropFilter: 'blur(10px)'
-           }}>
-             <div style={{
-               width: `${progress}%`,
-               height: '100%',
-               background: 'linear-gradient(90deg, #1a237e, #4caf50)',
-               borderRadius: '4px',
-               transition: 'width 0.5s ease',
-               boxShadow: '0 0 20px rgba(25, 118, 210, 0.5)'
-             }} />
-           </div>
-           <p style={{
-             textAlign: 'center',
-             color: 'rgba(255, 255, 255, 0.7)',
-             fontSize: '0.9rem',
-             marginTop: '0.5rem'
-           }}>
-             {Math.round(progress)}% Complete
-           </p>
-         </div>
-                ) : (
-           <div style={{
-             textAlign: 'center',
-             position: 'relative',
-             zIndex: 2,
-             animation: 'fadeInUp 0.8s ease-out'
-           }}>
-           <div style={{
-             width: '80px',
-             height: '80px',
-             borderRadius: '50%',
-             background: 'linear-gradient(135deg, #4caf50, #66bb6a)',
-             display: 'flex',
-             alignItems: 'center',
-             justifyContent: 'center',
-             fontSize: '2.5rem',
-             margin: '0 auto 1.5rem auto',
-             boxShadow: '0 8px 32px rgba(76, 175, 80, 0.4)',
-             animation: 'pulse 2s infinite'
-           }}>
-             ✅
-           </div>
-           <h2 style={{
-             fontSize: '1.8rem',
-             fontWeight: 700,
-             color: '#4caf50',
-             margin: 0,
-             marginBottom: '0.5rem',
-             textShadow: '0 2px 4px rgba(0,0,0,0.3)'
-           }}>
-             All Connections Established!
-           </h2>
-           <p style={{
-             fontSize: '1.1rem',
-             color: 'rgba(255, 255, 255, 0.9)',
-             margin: 0,
-             fontStyle: 'italic'
-           }}>
-             Bee Agents are ready to analyze climate data for your city
-           </p>
-         </div>
-       )}
+      {/* Barre de progression ou message de succès */}
+      {!showSuccess ? (
+        <div style={{
+          width: '100%',
+          maxWidth: '400px',
+          position: 'relative',
+          zIndex: 2,
+          padding: '0 0.5rem'
+        }}>
+          <div style={{
+            width: '100%',
+            height: '6px',
+            background: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '3px',
+            overflow: 'hidden',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)'
+          }}>
+            <div style={{
+              width: `${progress}%`,
+              height: '100%',
+              background: 'linear-gradient(90deg, #1a237e, #4caf50)',
+              borderRadius: '3px',
+              transition: 'width 0.5s ease',
+              boxShadow: '0 0 16px rgba(25, 118, 210, 0.5)'
+            }} />
+          </div>
+          <p style={{
+            textAlign: 'center',
+            color: 'rgba(255, 255, 255, 0.7)',
+            fontSize: 'clamp(0.8rem, 2vw, 0.9rem)',
+            marginTop: '0.5rem',
+            margin: 0
+          }}>
+            {Math.round(progress)}% Complete
+          </p>
+        </div>
+      ) : (
+        <div style={{
+          textAlign: 'center',
+          position: 'relative',
+          zIndex: 2,
+          animation: 'fadeInUp 0.8s ease-out',
+          padding: '1rem'
+        }}>
+          <div style={{
+            width: '60px',
+            height: '60px',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #4caf50, #66bb6a)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '2rem',
+            margin: '0 auto 0.75rem auto',
+            boxShadow: '0 8px 32px rgba(76, 175, 80, 0.4)',
+            animation: 'pulse 2s infinite'
+          }}>
+            ✅
+          </div>
+          <h2 style={{
+            fontSize: 'clamp(1.25rem, 4vw, 1.6rem)',
+            fontWeight: 700,
+            color: '#4caf50',
+            margin: 0,
+            marginBottom: '0.25rem',
+            textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+            lineHeight: 1.2
+          }}>
+            All Connections Established!
+          </h2>
+          <p style={{
+            fontSize: 'clamp(0.9rem, 3vw, 1rem)',
+            color: 'rgba(255, 255, 255, 0.9)',
+            margin: 0,
+            fontStyle: 'italic',
+            lineHeight: 1.3
+          }}>
+            Bee Agents are ready to analyze climate data for your city
+          </p>
+        </div>
+      )}
 
       {/* Styles CSS pour les animations */}
       <style jsx>{`
