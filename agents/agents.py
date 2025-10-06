@@ -4,46 +4,43 @@ from dotenv import load_dotenv
 # Load .env first so os.getenv() works
 load_dotenv(override=True)
 
-# Now set the environment variables
 os.environ["WATSONX_URL"] = os.getenv("WATSONX_API_URL", "https://eu-de.ml.cloud.ibm.com")
 os.environ["WATSONX_APIKEY"] = os.getenv("WATSONX_API_KEY", "")
 os.environ["WATSONX_PROJECT_ID"] = os.getenv("WATSONX_PROJECT_ID", "")
-
-# Also set the generic ones (beeai expects these)
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY", "")
 os.environ["WATSONX_API_URL"] = os.environ["WATSONX_URL"]
 os.environ["WATSONX_API_KEY"] = os.environ["WATSONX_APIKEY"]
 
-# Debug: print to check values
-print("Watsonx URL:", os.environ["WATSONX_API_URL"])
-print("Watsonx Project ID:", os.environ["WATSONX_PROJECT_ID"])
-print("Watsonx API Key:", "set" if os.environ["WATSONX_API_KEY"] else "missing")
-
-# Now import the framework stuff
 from beeai_framework.backend.chat import ChatModel
-from beeai_framework.tools.search.wikipedia import WikipediaTool
-from beeai_framework.tools.weather.openmeteo import OpenMeteoTool
+from beeai_framework.adapters.openai import OpenAIChatModel, OpenAIEmbeddingModel
+from beeai_framework.backend import ChatModel
 from beeai_framework.workflows.agent import AgentWorkflow, AgentWorkflowInput
-from beeai_framework.memory import TokenMemory
 from tools.onu_tools import UNSDGTool, UNSDGToolInput
 from tools.climate_tool import ClimateChangeTool
 from utils.constants import COUNTRY_CODES, LOCATION_CODES, SDG11_TARGETS_INDICATORS, CLIMATE_MODELS
 import logging
 import asyncio
+from beeai_framework.backend import ChatModelParameters, UserMessage
+from beeai_framework.cache import SlidingCache
+from beeai_framework.adapters.openai import OpenAIChatModel
+from langchain_ibm import ChatWatsonx
 
+url = os.environ["WATSONX_API_URL"]
+api_key = os.environ["WATSONX_API_KEY"]
+project_id = os.environ["WATSONX_PROJECT_ID"]
 
 logging.basicConfig(level=logging.DEBUG)
 
+# model_name = ChatModel.from_name("watsonx:ibm/granite-3-3-8b-instruct")
+model_name = ChatModel.from_name("openai:gpt-4.1-mini")
+# model_name = ChatWatsonx(project_id=project_id, model_id="ibm/granite-4-h-small")
 
-# Models - You can change the model here
-model_name = ChatModel.from_name("watsonx:ibm/granite-3-3-8b-instruct")
-# model_name = ChatModel.from_name("watsonx:ibm/ibm/granite-4.0-h-small")
+# Add cache
+model_name.config(cache=SlidingCache(size=50))
 
-async def run_climate_agents(city: str) -> str:
-    print(f"Running climate agents for city: {city}")
-    
+async def run_climate_agents(city: str, provider: str = None) -> str:
     workflow = AgentWorkflow(name="Climate change analysis with SDG11 recommendations")
-    logging.debug(f"Running recommendation agent with input: {city}")
-    
+
     workflow.add_agent(
         name="ClimateAnalyst",
         role="Expert in climate change impact analysis and SDG11-aligned urban planning",
@@ -56,6 +53,20 @@ You are ClimateImpactAnalyst, an AI climatologist tasked with:
 - You MUST call ClimateChangeTool BEFORE drafting any text.
 - Retrieve all available indicators for {city} for the years 1950, 2025, and 2050.
 - You MUST use only the retrieved numerical values. Do NOT invent numbers.
+
+Model–metric evaluation
+
+            For EACH AND ALL metric–year pair (7 metrics per year):
+            ─ Match model strengths / weaknesses to (a) the metric’s physical basis,
+            (b) the geographic features of LOCATION (coast, elevation, latitude, etc.).
+            ─ Score suitability on accuracy, temporal resolution, regional bias, and peer-review pedigree.
+            ─ If several models tie, either
+            • choose the single most appropriate by qualitative edge or
+            • create a weighted ensemble (explain the weights in ≤ 15 words).
+            Output one value per metric-year pair
+
+            Model Datas : {CLIMATE_MODELS}
+
 
 # STEP 2 – REPORT STRUCTURE
 Produce ONLY a long-form Markdown report (~1500–2000 words) with:
@@ -89,9 +100,9 @@ Produce ONLY a long-form Markdown report (~1500–2000 words) with:
 - Recommendations section: all actions quantified, budgeted, and linked to climate risks identified in part 1.
         """,
         tools=[ClimateChangeTool()],
-        llm=model_name, 
+        llm=model_name,
     )
-    
+
     response = await workflow.run(
         inputs=[
             AgentWorkflowInput(
@@ -112,14 +123,10 @@ Produce ONLY a long-form Markdown report (~1500–2000 words) with:
             ),
         ]
     )
-    logging.debug(f"Recommendation agent result: {response.result.final_answer}")
-    print(response.result.final_answer)
     return response.result.final_answer
 
 
 async def run_recommendation_agent(city: str) -> str:
-
-
     workflow = AgentWorkflow(name="Recommendation assistant")
 
     workflow.add_agent(
@@ -128,6 +135,17 @@ async def run_recommendation_agent(city: str) -> str:
         instructions=f"""
 You are UrbanAdvisor — a sustainable urban policy planner who produces ambitious but realistic recommendations for the target city,
 fully quantified and strictly aligned with UN SDG 11 targets and indicators.
+
+"You provide actionable recommendations to make the city more sustainable and resilient to climate change. "
+            "Your advice should be concrete, adapted to the city's context, and cover topics like mobility, waste management, "
+            "green spaces, energy, and citizen engagement. "
+            "When formulating recommendations, make sure they are aligned with the following UN Sustainable Development Goal 11 "
+            "targets and indicators:\n\n"
+            f"{SDG11_TARGETS_INDICATORS}
+            To get the value of the UNO indicator for this city, use your tool and fetch the values for the associated country, here is the list of country codes to use for the API:
+            {COUNTRY_CODES}.
+            You'll get multiple values for a single indicator, here is the list of code to better undertand where each value comes from : 
+            {LOCATION_CODES}
 
 # CRITICAL TOOL USAGE REQUIREMENT
 - You MUST call the UNSDGTool BEFORE drafting any recommendation text.
@@ -301,4 +319,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-    
