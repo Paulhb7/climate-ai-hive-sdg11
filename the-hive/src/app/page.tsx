@@ -219,8 +219,8 @@ export default function Home() {
     setQuestionResponse(null);
     
     try {
-      const res = await fetch("https://hive-api.2112vngagmop.eu-de.codeengine.appdomain.cloud/recommendations", {
-      //const res = await fetch("http://127.0.0.1:8000/recommendations", {
+      //const res = await fetch("https://hive-api.2112vngagmop.eu-de.codeengine.appdomain.cloud/recommendations", {
+      const res = await fetch("http://127.0.0.1:8000/recommendations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         cache: 'no-store',
@@ -248,8 +248,8 @@ export default function Home() {
     setClimateAnalysisResult(null);
     
     try {
-      const res = await fetch("https://hive-api.2112vngagmop.eu-de.codeengine.appdomain.cloud/climate-impact", {
-      //const res = await fetch("http://127.0.0.1:8000/climate-impact", {
+      //const res = await fetch("https://hive-api.2112vngagmop.eu-de.codeengine.appdomain.cloud/climate-impact", {
+      const res = await fetch("http://127.0.0.1:8000/climate-impact", {
       method: "POST",
         headers: { "Content-Type": "application/json" },
         cache: 'no-store',
