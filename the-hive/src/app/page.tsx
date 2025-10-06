@@ -158,9 +158,11 @@ export default function Home() {
     setErrorAgent(null);
     setLoadingAgent(true);
     try {
-      const res = await fetch("http://localhost:8080/recommendations", {
+      //const res = await fetch('https://hive-api.2112vngagmop.eu-de.codeengine.appdomain.cloud/recommendations', {
+      const res = await fetch("http://127.0.0.1:8000/recommendations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        cache: 'no-store',
         body: JSON.stringify({ city: selectedCity }),
       });
       const data = await res.json();
@@ -189,7 +191,7 @@ export default function Home() {
       try {
         const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${mapboxToken}`);
         const data = await res.json();
-        const place = data.features?.find((f: any) => f.place_type.includes('place'));
+        const place = data.features?.find((f: unknown) => (f as any).place_type.includes('place'));
         if (place && place.text) {
           setCity(place.text);
           // Lance automatiquement la recherche
@@ -217,9 +219,11 @@ export default function Home() {
     setQuestionResponse(null);
     
     try {
-      const res = await fetch("http://localhost:8080/recommendations", {
+      const res = await fetch("https://hive-api.2112vngagmop.eu-de.codeengine.appdomain.cloud/recommendations", {
+      //const res = await fetch("http://127.0.0.1:8000/recommendations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        cache: 'no-store',
         body: JSON.stringify({ 
           city: selectedCity,
           question: additionalQuestion 
@@ -244,9 +248,11 @@ export default function Home() {
     setClimateAnalysisResult(null);
     
     try {
-      const res = await fetch("http://localhost:8080/climate-impact", {
-        method: "POST",
+      const res = await fetch("https://hive-api.2112vngagmop.eu-de.codeengine.appdomain.cloud/climate-impact", {
+      //const res = await fetch("http://127.0.0.1:8000/climate-impact", {
+      method: "POST",
         headers: { "Content-Type": "application/json" },
+        cache: 'no-store',
         body: JSON.stringify({ city: selectedCity }),
       });
       const data = await res.json();
@@ -1409,7 +1415,7 @@ export default function Home() {
                              maxWidth: '800px',
                              margin: '0 auto 2rem auto'
                            }}>
-                             Interactive climate zones map based on Probable Futures showing how global warming will transform Earth's climate patterns under a 3°C warming scenario. 
+                             Interactive climate zones map based on Probable Futures showing how global warming will transform Earth&apos;s climate patterns under a 3°C warming scenario. 
                              Different colors represent distinct climate zones that will shift as temperatures rise. 
                              Explore how climate zones around {selectedCity} and globally will change.
                            </p>
