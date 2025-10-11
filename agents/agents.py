@@ -1,39 +1,34 @@
 import os
+import logging
+import asyncio
 from dotenv import load_dotenv
+
+from beeai_framework.backend.chat import ChatModel
+from beeai_framework.adapters.openai import OpenAIChatModel, OpenAIEmbeddingModel
+from beeai_framework.backend import ChatModel, ChatModelParameters, UserMessage
+from beeai_framework.workflows.agent import AgentWorkflow, AgentWorkflowInput
+from beeai_framework.cache import SlidingCache
+
+from tools.onu_tools import UNSDGTool, UNSDGToolInput
+from tools.climate_tool import ClimateChangeTool
+from utils.constants import COUNTRY_CODES, LOCATION_CODES, SDG11_TARGETS_INDICATORS, CLIMATE_MODELS
+
+from langchain_ibm import ChatWatsonx
 
 # Load .env first so os.getenv() works
 load_dotenv(override=True)
 
-os.environ["WATSONX_URL"] = os.getenv("WATSONX_API_URL", "https://eu-de.ml.cloud.ibm.com")
-os.environ["WATSONX_APIKEY"] = os.getenv("WATSONX_API_KEY", "")
+# Set environment variables for watsonx and openai
+os.environ["WATSONX_API_URL"] = os.getenv("WATSONX_API_URL", "https://eu-de.ml.cloud.ibm.com")
+os.environ["WATSONX_API_KEY"] = os.getenv("WATSONX_API_KEY", "")
 os.environ["WATSONX_PROJECT_ID"] = os.getenv("WATSONX_PROJECT_ID", "")
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY", "")
-os.environ["WATSONX_API_URL"] = os.environ["WATSONX_URL"]
-os.environ["WATSONX_API_KEY"] = os.environ["WATSONX_APIKEY"]
-
-from beeai_framework.backend.chat import ChatModel
-from beeai_framework.adapters.openai import OpenAIChatModel, OpenAIEmbeddingModel
-from beeai_framework.backend import ChatModel
-from beeai_framework.workflows.agent import AgentWorkflow, AgentWorkflowInput
-from tools.onu_tools import UNSDGTool, UNSDGToolInput
-from tools.climate_tool import ClimateChangeTool
-from utils.constants import COUNTRY_CODES, LOCATION_CODES, SDG11_TARGETS_INDICATORS, CLIMATE_MODELS
-import logging
-import asyncio
-from beeai_framework.backend import ChatModelParameters, UserMessage
-from beeai_framework.cache import SlidingCache
-from beeai_framework.adapters.openai import OpenAIChatModel
-from langchain_ibm import ChatWatsonx
-
-url = os.environ["WATSONX_API_URL"]
-api_key = os.environ["WATSONX_API_KEY"]
-project_id = os.environ["WATSONX_PROJECT_ID"]
 
 logging.basicConfig(level=logging.DEBUG)
 
+model_name = ChatModel.from_name("watsonx:ibm/granite-4-h-small")
 # model_name = ChatModel.from_name("watsonx:ibm/granite-3-3-8b-instruct")
-model_name = ChatModel.from_name("openai:gpt-4.1-mini")
-# model_name = ChatWatsonx(project_id=project_id, model_id="ibm/granite-4-h-small")
+# model_name = ChatModel.from_name("openai:gpt-4.1-mini")
 
 # Add cache
 #model_name.config(cache=SlidingCache(size=50))
