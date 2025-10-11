@@ -1,96 +1,42 @@
-# API Backend - Hive.ai
+🐝 API Backend – Hive.ai
+1. Environment Variables
 
-## Configuration
+Before running the API, create a .env file (based on .env.example) in the backend folder containing your keys:
 
-### 1. Variables d'environnement
+```bash
+# === Watsonx (IBM) ===
+WATSONX_API_URL=https://eu-de.ml.cloud.ibm.com
+WATSONX_API_KEY=your_watsonx_api_key
+WATSONX_PROJECT_ID=your_project_id
 
-Créez un fichier `.env` dans le dossier `backend` avec les variables suivantes :
+# === OpenAI (optional) ===
+OPENAI_API_KEY=your_openai_api_key
 
-```env
-# API Keys (obligatoire)
-GROQ_API_KEY=your_groq_api_key_here
-
-# WatsonX (optionnel, si vous voulez utiliser WatsonX au lieu de Groq)
-WATSONX_PROJECT_ID=your_watsonx_project_id_here
-WATSONX_API_KEY=your_watsonx_api_key_here
-WATSONX_API_URL=your_watsonx_api_url_here
-
-# Modèles par défaut
-DEFAULT_GROQ_MODEL=qwen/qwen3-32b
-DEFAULT_WATSONX_MODEL=llama-3-3-70b-instruct
-DEFAULT_PROVIDER=groq
-
-# Modèle pour les projets UN (optionnel)
-UN_PROJECTS_MODEL=
+# === Default Model ===
+MODEL_NAME=watsonx:ibm/granite-4-h-small
 ```
 
-### 2. Installation des dépendances
+💡 You can change MODEL_NAME to another model supported by BeeAI, such as:
+watsonx:ibm/granite-3-3-8b-instruct or openai:gpt-4.1-mini, depending on your needs.
 
+2. Install Dependencies
+   
 ```bash
 cd backend
 pip install -r requirements.txt
 ```
 
-## Démarrage de l'API
-
-### Méthode 1 : Script automatique (recommandé)
+Starting the API
+Method 1: Automatic Script (recommended)
 
 ```bash
 cd backend
-python start_api.py
+python api.py
 ```
 
-### Méthode 2 : Commande directe
+Method 2: Direct Command
 
 ```bash
 cd backend
 uvicorn api:app --reload --host 0.0.0.0 --port 8000
 ```
-
-## Endpoints disponibles
-
-Une fois l'API démarrée, elle sera accessible sur `http://localhost:8000`
-
-### Documentation interactive
-- **Swagger UI** : http://localhost:8000/docs
-- **ReDoc** : http://localhost:8000/redoc
-
-### Endpoints
-
-1. **POST /climate-impact**
-   - Analyse l'impact du changement climatique sur une ville
-   - Body: `{"city": "Paris"}`
-
-2. **POST /recommendations**
-   - Génère des recommandations pour rendre une ville plus durable
-   - Body: `{"city": "Paris"}` ou `{"city": "Paris", "question": "votre question"}`
-
-3. **POST /un-projects**
-   - Liste les projets UN liés au développement durable
-   - Body: `{"city": "Paris"}`
-
-4. **POST /sdg11-validation**
-   - Valide si une proposition respecte les critères SDG11
-   - Body: `{"city": "Paris", "question": "votre proposition"}`
-
-## Exemple d'utilisation
-
-```bash
-# Test de l'API
-curl -X POST "http://localhost:8000/climate-impact" \
-     -H "Content-Type: application/json" \
-     -d '{"city": "Paris"}'
-```
-
-## Dépannage
-
-### Problème : "GROQ_API_KEY not found"
-- Vérifiez que le fichier `.env` existe dans le dossier `backend`
-- Vérifiez que `GROQ_API_KEY` est correctement configurée
-
-### Problème : "Module not found"
-- Vérifiez que toutes les dépendances sont installées : `pip install -r requirements.txt`
-
-### Problème : Port déjà utilisé
-- Changez le port dans la commande : `uvicorn api:app --port 8001`
-- Ou arrêtez le processus qui utilise le port 8000 
