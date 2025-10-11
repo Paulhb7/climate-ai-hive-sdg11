@@ -1,6 +1,4 @@
-beeai-framework
-beeai-framework[wikipedia]
-beeai-framework[acp]
+beeai-framework[watsonx,wikipedia,acp]
 fastapi
 uvicorn
 python-dotenv
