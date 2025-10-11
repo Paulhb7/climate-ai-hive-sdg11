@@ -26,7 +26,9 @@ os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY", "")
 
 logging.basicConfig(level=logging.DEBUG)
 
-model_name = ChatModel.from_name("watsonx:ibm/granite-4-h-small")
+model_name_str = os.getenv("MODEL_NAME", "watsonx:ibm/granite-4-h-small")
+model_name = ChatModel.from_name(model_name_str)
+
 # model_name = ChatModel.from_name("watsonx:ibm/granite-3-3-8b-instruct")
 # model_name = ChatModel.from_name("openai:gpt-4.1-mini")
 
