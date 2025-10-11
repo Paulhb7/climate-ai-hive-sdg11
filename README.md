@@ -88,11 +88,18 @@ npm run dev
 You can configure the default provider and models in your `.env` file:  
 
 ```bash
-WATSONX_API_URL=https://us-south.ml.cloud.ibm.com
-WATSONX_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx
-WATSONX_PROJECT_ID=your_project_id_here
-```
+# === Watsonx (IBM) ===
+WATSONX_API_URL=https://eu-de.ml.cloud.ibm.com
+WATSONX_API_KEY=your_watsonx_api_key
+WATSONX_PROJECT_ID=your_project_id
 
+# === OpenAI (optional) ===
+OPENAI_API_KEY=your_openai_api_key
+
+# === Default Model ===
+MODEL_NAME=watsonx:ibm/granite-4-h-small
+```
+💡 You can change MODEL_NAME to another model supported by BeeAI, such as: watsonx:ibm/granite-3-3-8b-instruct or openai:gpt-4.1-mini, depending on your needs.
 ---
 
 ## 📡 API Endpoints  
