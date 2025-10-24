@@ -32,7 +32,8 @@ project_id = os.environ["WATSONX_PROJECT_ID"]
 logging.basicConfig(level=logging.DEBUG)
 
 # model_name = ChatModel.from_name("watsonx:ibm/granite-3-3-8b-instruct")
-model_name = ChatModel.from_name("openai:gpt-4.1-mini")
+model_name = ChatModel.from_name("watsonx:ibm/granite-4-h-small")
+# model_name = ChatModel.from_name("openai:gpt-4.1-mini")
 # model_name = ChatWatsonx(project_id=project_id, model_id="ibm/granite-4-h-small")
 
 # Add cache
